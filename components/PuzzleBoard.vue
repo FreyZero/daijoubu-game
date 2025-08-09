@@ -130,13 +130,14 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
 
 .controls {
   display: flex;
-  gap: 15px;
+  flex-wrap: wrap;
+  gap: 10px 15px;
   margin-bottom: 10px;
 }
 
 .board-wrapper {
   position: relative;
-  width: 80vw; /* 80% of viewport width */
+  width: min(92vw, 900px);
   max-width: 900px; /* Max width for large screens */
   border: 2px solid #333;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -204,11 +205,11 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
 .toggle-overlay-button {
   background-color: #f44336;
   color: white;
-  padding: 12px 25px;
+  padding: 10px 18px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   transition: background-color 0.3s ease;
 }
 
@@ -222,5 +223,9 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
 
 .toggle-overlay-button:hover {
   background-color: #db2777; /* slightly darker pink */
+}
+
+@media (min-width: 768px) {
+  .board-wrapper { width: min(80vw, 900px); }
 }
 </style>

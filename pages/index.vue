@@ -56,12 +56,12 @@ const games: Game[] = [
             </div>
           </template>
 
-          <p class="text-gray-600">{{ g.description }}</p>
+          <p class="text-gray-500">{{ g.description }}</p>
 
           <template #footer>
             <div class="flex items-center justify-between">
               <span class="text-primary group-hover:underline">Learn more</span>
-              <UButton color="primary" icon="i-heroicons-play-solid">Play</UButton>
+              <UButton color="primary" icon="i-heroicons-play-solid" class="cursor-pointer">Play</UButton>
             </div>
           </template>
         </UCard>

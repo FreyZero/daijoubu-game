@@ -197,4 +197,12 @@ function setBoardDimensions() {
 
 .error { color: #dc2626; margin-top: 10px; }
 .filename { color: #475569; margin-top: 6px; font-size: 0.9rem; }
+
+@media (max-width: 740px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; }
+  .preview-actions { flex-wrap: wrap; }
+}
 </style>

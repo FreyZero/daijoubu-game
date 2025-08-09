@@ -5,18 +5,29 @@
   /* Brand palette from the logo (pastel pink/purple) */
   --brand-pink-50: #fde7f3;
   --brand-pink-100: #fbdcf0;
+  --brand-pink-200: #f9b2e0;
   --brand-pink-300: #f8b4d9; /* light */
   --brand-pink-400: #f472b6;
   --brand-pink-500: #ec4899; /* primary accent */
   --brand-purple-400: #a78bfa; /* logo outline vibe */
   --brand-bg: #f7e6f6; /* soft page bg from logo */
   --brand-text: #5b3e7e; /* deep purple text */
+
+  /* Layout rhythm */
+  --page-x: clamp(1rem, 3vw, 2rem);
+  --page-y: clamp(0.75rem, 1.5vw, 1.5rem);
+  --radius-lg: 14px;
 }
 
 html, body {
   background: var(--brand-bg);
   color: var(--brand-text);
 }
+
+/* Prefer smoother fonts on Windows */
+* { -webkit-tap-highlight-color: transparent; }
+img { max-width: 100%; height: auto; }
+a { color: var(--brand-pink-500); }
 
 /* Buttons (fallback when not using Nuxt UI components) */
 button.btn, .btn {
@@ -35,3 +46,16 @@ header {
   background: linear-gradient(90deg, var(--brand-purple-400), var(--brand-pink-400));
 }
 header a { color: white !important; }
+
+/* Cards */
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1rem; }
+
+/* Utilities */
+.container { margin-inline: auto; padding-inline: var(--page-x); }
+.stack-sm > * + * { margin-top: 0.5rem; }
+.stack > * + * { margin-top: 1rem; }
+.stack-lg > * + * { margin-top: 1.5rem; }
+
+@media (max-width: 480px) {
+  :root { --page-x: 0.875rem; }
+}

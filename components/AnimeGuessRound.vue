@@ -75,7 +75,7 @@ const synopsisMasked = computed(() => {
 })
 
 // Show full synopsis after answering; otherwise show masked version
-const synopsisDisplay = computed(() => {
+const _synopsisDisplay = computed(() => {
   return selectedIndex.value !== null
     ? (anime.value?.synopsis || '')
     : synopsisMasked.value
@@ -85,7 +85,7 @@ const blurAmount = computed(() => {
   // Unblur when an answer has been submitted
   if (selectedIndex.value !== null) return 0
   // 0 -> 12px, 1 -> 8px, 2 -> 4px, 3 -> 0px
-  return Math.max(12 - hintsLevel.value * 4, 0)
+  return Math.max(12 - hintsLevel.value * 3, 0)
 })
 
 const primaryStudio = computed(() => anime.value?.studios?.[0]?.name || 'Unknown')
@@ -146,7 +146,8 @@ async function fetchDistractorTitles(excludeTitle: string): Promise<string[]> {
   const uniq = Array.from(new Set(pool.map(normalize))).map(n =>
     pool.find(t => normalize(t) === n) as string
   )
-  return shuffle(uniq).slice(0, 3)
+  // return a larger batch to help reach 5 distractors
+  return shuffle(uniq).slice(0, 10)
 }
 
 async function loadRound() {
@@ -162,11 +163,11 @@ async function loadRound() {
 
     let distractors = await fetchDistractorTitles(correctTitle.value)
     // If not enough distractors, try again with a different page
-    while (distractors.length < 3) {
+    while (distractors.length < 5) {
       const more = await fetchDistractorTitles(correctTitle.value)
       distractors = Array.from(new Set([...distractors, ...more]))
     }
-    const opts = shuffle([correctTitle.value, ...distractors.slice(0, 3)])
+    const opts = shuffle([correctTitle.value, ...distractors.slice(0, 5)])
     options.value = opts
     correctIndex.value = opts.findIndex(o => normalize(o) === normalize(correctTitle.value))
   } catch {
@@ -309,7 +310,7 @@ onMounted(loadRound)
 
 .options {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
 }
 .opt {

@@ -31,7 +31,7 @@ const handleBoardDimensionsSet = (dimensions) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 20px var(--page-x);
   font-family: Arial, sans-serif;
   width: 100%;
 }

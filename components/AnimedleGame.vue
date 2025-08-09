@@ -80,7 +80,7 @@ function onHiddenInput() {
   hiddenValue.value = ''
 }
 
-const letters = 'QWERTYUIOP ASDFGHJKL ZXCVBNM'.split(' ')
+const keysAZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 const currentRow = computed(() => rowIndex.value)
 const wordLength = computed(() => targetWord.value.length)
 
@@ -452,18 +452,22 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="keyboard">
-        <div v-for="row in letters" :key="row" class="kb-row">
-          <template v-if="row === 'QWERTYUIOP'">
-            <button v-for="k in row.split('')" :key="k" class="key" :class="keyboardState[k]" @click="pressKey(k)">{{ k }}</button>
-          </template>
-          <template v-else-if="row === 'ASDFGHJKL'">
-            <button v-for="k in row.split('')" :key="k" class="key" :class="keyboardState[k]" @click="pressKey(k)">{{ k }}</button>
-          </template>
-          <template v-else>
-            <button class="key wide" @click="pressKey('ENTER')">ENTER</button>
-            <button v-for="k in row.split('')" :key="k" class="key" :class="keyboardState[k]" @click="pressKey(k)">{{ k }}</button>
-            <button class="key wide" @click="pressKey('BACKSPACE')">DEL</button>
-          </template>
+        <div class="kb-grid" role="group" aria-label="On-screen keyboard">
+          <button
+            v-for="k in keysAZ"
+            :key="k"
+            class="key"
+            :class="keyboardState[k]"
+            type="button"
+            :aria-label="`Key ${k}`"
+            @click="pressKey(k)"
+          >
+            {{ k }}
+          </button>
+        </div>
+        <div class="kb-actions" role="group" aria-label="Keyboard actions">
+          <button class="key action" type="button" @click="pressKey('BACKSPACE')">DEL</button>
+          <button class="key action btn" type="button" @click="pressKey('ENTER')">ENTER</button>
         </div>
       </div>
 
@@ -544,8 +548,17 @@ onBeforeUnmount(() => {
 .tile.present { background: #f59e0b; color: white; border-color: #f59e0b; }
 .tile.absent { background: #334155; color: white; border-color: #334155; }
 
-.keyboard { display: grid; gap: 8px; margin-top: 8px; }
-.kb-row { display: flex; gap: 6px; justify-content: center; }
+.keyboard { display: grid; gap: 10px; margin-top: 8px; }
+.kb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
+  gap: 6px;
+}
+.kb-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(80px, 1fr));
+  gap: 8px;
+}
 .key {
   background: #e2e8f0;
   color: #0f172a;
@@ -556,7 +569,7 @@ onBeforeUnmount(() => {
   min-width: 36px;
   font-weight: 600;
 }
-.key.wide { min-width: 66px; }
+.key.action { min-height: 40px; }
 .key.correct { background: #16a34a; color: white; }
 .key.present { background: #f59e0b; color: white; }
 .key.absent { background: #334155; color: white; }

@@ -30,7 +30,7 @@ const resetGame = () => {
 </script>
 
 <template>
-  <div class="page-wrapper" style="max-width: 960px; margin: 0 auto;">
+  <div class="page-wrapper">
     <h1 class="text-3xl font-bold mb-4">Guess the Anime</h1>
 
     <div class="mb-4" style="display:flex; gap:1rem; align-items:center;">
@@ -45,7 +45,7 @@ const resetGame = () => {
       />
     </ClientOnly>
 
-    <div class="mt-6" style="display:flex; gap:0.75rem; justify-content: space-between;">
+  <div class="mt-6 actions">
       <button class="btn-outline" @click="resetGame">Reset Game</button>
       <button
         class="btn"
@@ -71,6 +71,8 @@ const resetGame = () => {
 </template>
 
 <style scoped>
+.page-wrapper { max-width: 960px; margin: 0 auto; padding: 0 var(--page-x); }
+.actions { display:flex; gap:0.75rem; justify-content: space-between; flex-wrap: wrap; }
 .btn {
   background-color: var(--brand-pink-500);
   color: white;
@@ -87,5 +89,8 @@ const resetGame = () => {
   padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.5rem; }
 }
 </style>
