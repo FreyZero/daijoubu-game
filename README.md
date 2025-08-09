@@ -1,5 +1,5 @@
 # API
-https://nekosia.cat/
+https://docs.api.jikan.moe/
 
 # Nuxt Minimal Starter
 
