@@ -3,9 +3,16 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 
 type Mode = 'anime' | 'character'
 
-type JikanImageEntry = { large_image_url?: string; large_large_image_url?: string }
+type JikanImageEntry = {
+  // Jikan anime often provides large_image_url; characters commonly use image_url/small_image_url
+  image_url?: string
+  small_image_url?: string
+  large_image_url?: string
+  large_large_image_url?: string
+}
 type JikanImages = { jpg?: JikanImageEntry; webp?: JikanImageEntry }
 type JikanStudio = { name: string }
+type JikanGenre = { name: string }
 type JikanAnime = {
   mal_id: number
   title: string
@@ -17,11 +24,12 @@ type JikanAnime = {
   year?: number | null
   type?: string | null
   studios?: JikanStudio[]
+  genres?: JikanGenre[]
 }
-type JikanAnimeCharacter = {
-  role: string
-  character: { mal_id: number; name: string; images?: JikanImages }
-}
+// Character API types (from Jikan Characters endpoints)
+type JikanCharacter = { mal_id: number; name: string; images?: JikanImages }
+type JikanCharacterAnimeography = { role: string; anime: { mal_id: number; title: string; images?: JikanImages; type?: string | null } }
+type JikanCharacterFull = { mal_id: number; name: string; images?: JikanImages; anime?: JikanCharacterAnimeography[] }
 
 const props = defineProps<{ mode: Mode }>()
 
@@ -37,6 +45,7 @@ const targetMeta = ref<{      // extra details for hints
   type?: string | null
   studio?: string | null
   animeTitle?: string | null
+  genres?: JikanGenre[] | null
 } | null>(null)
 
 const attemptsMax = 6
@@ -79,7 +88,17 @@ function displayTitle(a: JikanAnime) {
   return a.title_english?.trim() || a.title?.trim() || a.title_japanese?.trim() || a.title?.trim() || ''
 }
 function imageFrom(images?: JikanImages) {
-  return images?.jpg?.large_image_url || images?.webp?.large_image_url || images?.jpg?.large_large_image_url || images?.webp?.large_large_image_url || null
+  return (
+    images?.jpg?.large_image_url ||
+    images?.webp?.large_image_url ||
+    images?.jpg?.image_url ||
+    images?.webp?.image_url ||
+    images?.jpg?.small_image_url ||
+    images?.webp?.small_image_url ||
+    images?.jpg?.large_large_image_url ||
+    images?.webp?.large_large_image_url ||
+    null
+  )
 }
 function normalizeLetters(s: string) {
   // Uppercase A-Z only; remove spaces/punct/diacritics
@@ -196,10 +215,11 @@ function handleKeydown(e: KeyboardEvent) {
 const hintLevel = computed(() => {
   // after 2, 4, 5 attempts reveal more
   const used = currentRow.value
-  if (won.value || gameOver.value) return 3
-  if (used >= 5) return 3
-  if (used >= 4) return 2
-  if (used >= 2) return 1
+  if (won.value || gameOver.value) return 5
+  if (used >= 5) return 4
+  if (used >= 4) return 3
+  if (used >= 2) return 2
+  if (used >= 1) return 1
   return 0
 })
 
@@ -210,6 +230,7 @@ const hintList = computed(() => {
     if (meta.type) list.push(`Type: ${meta.type}`)
     if (meta.year) list.push(`Year: ${meta.year}`)
     if (meta.studio) list.push(`Studio: ${meta.studio}`)
+    if (meta.genres) list.push(`Genres: ${meta.genres.map(g => g.name).join(', ')}`)
     if (meta.synopsis) list.push(`Synopsis: ${meta.synopsis.slice(0, 160)}…`)
   } else {
     if (meta.animeTitle) list.push(`Anime: ${meta.animeTitle}`)
@@ -240,6 +261,27 @@ async function ensureTopAnimeCache() {
   cacheLoaded = true
 }
 
+// Characters cache using Jikan Characters API (popular by favorites)
+const topCharactersCache: JikanCharacter[] = []
+let charCacheLoaded = false
+async function ensureTopCharactersCache() {
+  if (charCacheLoaded) return
+  const pages = Array.from({ length: 8 }, (_, i) => i + 1)
+  const chunkSize = 3 // respect Jikan rate limits
+  for (let i = 0; i < pages.length; i += chunkSize) {
+    const chunk = pages.slice(i, i + chunkSize)
+    const results = await Promise.allSettled(chunk.map(page =>
+      $fetch<{ data: JikanCharacter[] }>('https://api.jikan.moe/v4/characters', {
+        query: { order_by: 'favorites', sort: 'desc', limit: 25, page }
+      })
+    ))
+    for (const r of results) {
+      if (r.status === 'fulfilled') topCharactersCache.push(...r.value.data)
+    }
+  }
+  charCacheLoaded = true
+}
+
 function pickAnimeCandidate(minLen = 5, maxLen = 9): JikanAnime | null {
   // prefer English/romaji titles that normalize within desired length
   const shuffled = topAnimeCache.slice().sort(() => Math.random() - 0.5)
@@ -265,41 +307,60 @@ async function loadAnimeTarget() {
     year: a.year ?? null,
     type: a.type ?? null,
     studio: a.studios?.[0]?.name ?? null,
-    animeTitle: null
+    animeTitle: null,
+    genres: a.genres ? a.genres : []
   }
 }
 
 async function loadCharacterTarget() {
-  await ensureTopAnimeCache()
-  // pick an anime, then fetch characters, pick a character with 5–9 normalized letters
-  for (let tries = 0; tries < 6; tries++) {
-    const a = pickAnimeCandidate(3, 30) // any anime; character will be length-filtered
-    if (!a) break
-    const charsRes = await $fetch<{ data: JikanAnimeCharacter[] }>(`https://api.jikan.moe/v4/anime/${a.mal_id}/characters`)
-    const candidates = charsRes.data
-      .map(c => c.character)
-      .filter(Boolean)
-      .map(c => ({ name: c.name, image: imageFrom(c.images) }))
-      .filter(c => {
-        const n = normalizeLetters(c.name)
-        return n.length >= 5 && n.length <= 9
-      })
-    if (candidates.length) {
-      const pick = candidates[Math.floor(Math.random() * candidates.length)]
-      targetRaw.value = pick.name
-      targetWord.value = normalizeLetters(pick.name)
-      targetMeta.value = {
-        image: pick.image || null,
-        synopsis: null,
-        year: a.year ?? null,
-        type: a.type ?? null,
-        studio: a.studios?.[0]?.name ?? null,
-        animeTitle: displayTitle(a)
-      }
-      return
+  // Use Characters API: pick from popular characters by favorites, then enrich with animeography
+  await ensureTopCharactersCache()
+  const shuffled = topCharactersCache.slice().sort(() => Math.random() - 0.5)
+  for (const c of shuffled) {
+    const name = c.name?.trim() || ''
+    const normalized = normalizeLetters(name)
+    if (normalized.length < 5 || normalized.length > 9) continue
+    // Fetch full character to discover anime appearances
+    let charFull: JikanCharacterFull | null = null
+    try {
+      const fullRes = await $fetch<{ data: JikanCharacterFull }>(`https://api.jikan.moe/v4/characters/${c.mal_id}/full`)
+      charFull = fullRes.data
+    } catch {
+      continue
     }
+    const firstAnime = charFull?.anime?.[0]?.anime
+    // Optionally fetch anime details for year/type/studio if we have an id
+    let animeTitle: string | null = null
+    let year: number | null = null
+    let type: string | null = null
+    let studio: string | null = null
+    if (firstAnime?.mal_id) {
+      try {
+        const animeRes = await $fetch<{ data: JikanAnime }>(`https://api.jikan.moe/v4/anime/${firstAnime.mal_id}`)
+        const a = animeRes.data
+        animeTitle = displayTitle(a)
+        year = a.year ?? null
+        type = a.type ?? null
+        studio = a.studios?.[0]?.name ?? null
+      } catch {
+        animeTitle = firstAnime.title || null
+        // year/type/studio remain null
+      }
+    }
+
+    targetRaw.value = name
+    targetWord.value = normalized
+    targetMeta.value = {
+      image: imageFrom(charFull?.images) || imageFrom(c.images) || null,
+      synopsis: null,
+      year,
+      type,
+      studio,
+      animeTitle
+    }
+    return
   }
-  throw new Error('No suitable character found from top 200 anime.')
+  throw new Error('No suitable character found from popular characters list.')
 }
 
 async function newRound() {
@@ -373,7 +434,7 @@ onBeforeUnmount(() => {
         <button class="btn-outline" @click="reset">New Target</button>
       </div>
 
-      <div v-if="targetMeta?.image" class="image-wrap">
+      <div v-if="targetMeta?.image && gameOver" class="image-wrap">
         <img :src="targetMeta?.image" alt="cover">
       </div>
 
@@ -406,7 +467,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-  <div v-if="hintList.length" class="hints">
+    <div v-if="hintList.length" class="hints">
         <div v-for="(h, i) in hintList" :key="i" class="hint">{{ h }}</div>
       </div>
 
@@ -449,12 +510,11 @@ onBeforeUnmount(() => {
   margin-bottom: 12px;
 }
 .image-wrap {
-  width: 100%;
-  max-height: 260px;
+  width: 50%;
   overflow: hidden;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-  margin: 10px 0 14px;
+  margin: 10px auto 14px;
 }
 .image-wrap img { width: 100%; height: auto; object-fit: cover; display: block; }
 

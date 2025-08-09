@@ -1,6 +1,7 @@
 <template>
   <div>
     <header class="site-header">
+      <img src="/images/daijoubu-game-logo-2.png" alt="Daijoubu Game Logo" style="height: 48px; vertical-align: middle; margin-right: 1.5rem;" />
       <nav class="site-nav">
         <NuxtLink to="/">Home</NuxtLink>
         <NuxtLink to="/game/puzzle">Puzzle Game</NuxtLink>
@@ -16,7 +17,9 @@
 
 <style scoped>
 .site-header {
-  background: linear-gradient(90deg, var(--brand-purple-400), var(--brand-pink-400));
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, var(--brand-pink-300), var(--brand-purple-400));
   color: #fff;
   padding: 1rem;
 }

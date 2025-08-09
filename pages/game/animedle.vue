@@ -22,7 +22,7 @@ const newGame = () => { gameKey.value++ }
     </div>
 
     <ClientOnly>
-  <AnimedleGame :key="mode + ':' + gameKey" :mode="mode" />
+      <AnimedleGame :key="mode + ':' + gameKey" :mode="mode" />
     </ClientOnly>
   </div>
 </template>

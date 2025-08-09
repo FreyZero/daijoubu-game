@@ -7,6 +7,7 @@ type JikanImageEntry = {
 }
 type JikanImages = { jpg?: JikanImageEntry; webp?: JikanImageEntry }
 type JikanStudio = { name: string }
+type JikanGenre = { name: string }
 type JikanAnime = {
   mal_id: number
   title: string
@@ -18,6 +19,7 @@ type JikanAnime = {
   year?: number | null
   type?: string | null
   studios?: JikanStudio[]
+  genres?: JikanGenre[]
 }
 
 const emit = defineEmits<{ (e: 'result', correct: boolean): void }>()
@@ -94,7 +96,9 @@ const extraHints = computed(() => {
     a?.type ? `Type: ${a.type}` : null,
     a?.year ? `Year: ${a.year}` : null,
     a?.episodes != null ? `Episodes: ${a.episodes}` : null,
-    primaryStudio.value ? `Studio: ${primaryStudio.value}` : null
+    primaryStudio.value ? `Studio: ${primaryStudio.value}` : null,
+    a?.genres ? `Genres: ${a.genres.map(g => g.name).join(', ')}` : null,
+    a?.synopsis ? `Synopsis: ${a.synopsis}` : null
   ].filter(Boolean) as string[]
 })
 
@@ -177,13 +181,13 @@ function chooseOption(idx: number) {
   selectedIndex.value = idx
   const correct = idx === correctIndex.value
   // Reveal all hints once answered
-  hintsLevel.value = 3
+  hintsLevel.value = 5
   emit('result', correct)
 }
 
 function revealHint() {
   if (selectedIndex.value !== null) return
-  hintsLevel.value = Math.min(hintsLevel.value + 1, 3)
+  hintsLevel.value = Math.min(hintsLevel.value + 1, 5)
 }
 
 function retry() {
@@ -218,20 +222,21 @@ onMounted(loadRound)
       <div class="header">
         <h2>Which anime is this?</h2>
         <button class="btn-hint" :disabled="selectedIndex !== null" @click="revealHint">
-          Reveal Hint ({{ 3 - hintsLevel }} left)
+          Reveal Hint ({{ 5 - hintsLevel }} left)
         </button>
       </div>
 
-      <div class="synopsis">
+      <!-- <div class="synopsis">
         <strong>Synopsis:</strong>
         <div class="synopsis-text">{{ synopsisDisplay }}</div>
-      </div>
+      </div> -->
 
       <ul class="hints">
-        <li v-if="hintsLevel >= 1">{{ extraHints[0] }}</li>
-        <li v-if="hintsLevel >= 2">{{ extraHints[1] }}</li>
-        <li v-if="hintsLevel >= 3">{{ extraHints[2] }}</li>
-        <li v-if="hintsLevel >= 3 && extraHints[3]">{{ extraHints[3] }}</li>
+        <li v-if="hintsLevel >= 1"><strong>{{ extraHints[0].split(': ')[0] }}:</strong> {{ extraHints[0].split(': ')[1] }}</li>
+        <li v-if="hintsLevel >= 2"><strong>{{ extraHints[1].split(': ')[0] }}:</strong> {{ extraHints[1].split(': ')[1] }}</li>
+        <li v-if="hintsLevel >= 3"><strong>{{ extraHints[2].split(': ')[0] }}:</strong> {{ extraHints[2].split(': ')[1] }}</li>
+        <li v-if="hintsLevel >= 4"><strong>{{ extraHints[3].split(': ')[0] }}:</strong> {{ extraHints[3].split(': ')[1] }}</li>
+        <li v-if="hintsLevel >= 5"><strong>{{ extraHints[4].split(': ')[0] }}:</strong> {{ extraHints[4].split(': ')[1] }}</li>
       </ul>
 
       <div class="image-wrap" :style="{ filter: `blur(${blurAmount}px)` }">

@@ -45,7 +45,8 @@ const resetGame = () => {
       />
     </ClientOnly>
 
-    <div class="mt-6" style="display:flex; gap:0.75rem;">
+    <div class="mt-6" style="display:flex; gap:0.75rem; justify-content: space-between;">
+      <button class="btn-outline" @click="resetGame">Reset Game</button>
       <button
         class="btn"
         :disabled="!answeredThisRound || roundsPlayed >= totalRounds"
@@ -53,7 +54,6 @@ const resetGame = () => {
       >
         Next Round
       </button>
-      <button class="btn-outline" @click="resetGame">Reset Game</button>
     </div>
 
     <div

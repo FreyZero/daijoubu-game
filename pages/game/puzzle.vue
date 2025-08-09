@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="puzzle-container">
     <ImageUpload @image-uploaded="handleImageUploaded" @board-dimensions-set="handleBoardDimensionsSet" />
     <template v-if="imageUrl && boardCols && boardRows">
       <PuzzleBoard :imageUrl="imageUrl" :boardCols="boardCols" :boardRows="boardRows" />
@@ -27,12 +27,13 @@ const handleBoardDimensionsSet = (dimensions) => {
 </script>
 
 <style scoped>
-.container {
+.puzzle-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
   font-family: Arial, sans-serif;
+  width: 100%;
 }
 
 h1 {
