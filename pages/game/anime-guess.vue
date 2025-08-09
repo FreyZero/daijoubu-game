@@ -56,8 +56,11 @@ const resetGame = () => {
       <button class="btn-outline" @click="resetGame">Reset Game</button>
     </div>
 
-    <div v-if="roundsPlayed >= totalRounds" class="mt-6 p-4 rounded"
-         style="background:#f1f5f9;">
+    <div
+      v-if="roundsPlayed >= totalRounds"
+      class="mt-6 p-4 rounded"
+      style="background:#f1f5f9;"
+    >
       <strong>Game over!</strong>
       <div>Your final score: {{ score }} / {{ totalRounds }}</div>
       <div class="mt-2">
@@ -69,7 +72,7 @@ const resetGame = () => {
 
 <style scoped>
 .btn {
-  background-color: #008cba;
+  background-color: var(--brand-pink-500);
   color: white;
   padding: 10px 16px;
   border: none;
@@ -79,8 +82,8 @@ const resetGame = () => {
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-outline {
   background: transparent;
-  color: #008cba;
-  border: 2px solid #008cba;
+  color: var(--brand-pink-500);
+  border: 2px solid var(--brand-pink-500);
   padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;

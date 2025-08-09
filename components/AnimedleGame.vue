@@ -309,8 +309,8 @@ async function newRound() {
     if (props.mode === 'anime') await loadAnimeTarget()
     else await loadCharacterTarget()
     initBoard(wordLength.value)
-  } catch (e: any) {
-    errorMessage.value = e?.message || 'Failed to start game.'
+  } catch {
+    errorMessage.value = 'Failed to start game.'
   } finally {
     isLoading.value = false
   }
@@ -341,7 +341,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="animedle" @click="focusHidden">
     <!-- Hidden input to capture mobile typing -->
-    <input
+  <input
       ref="hiddenEl"
       v-model="hiddenValue"
       class="sr-only-input"
@@ -352,13 +352,13 @@ onBeforeUnmount(() => {
       spellcheck="false"
       @keydown="onHiddenKeydown"
       @input="onHiddenInput"
-    />
+  >
 
     <div v-if="isLoading" class="card">
-      <div class="skeleton title"></div>
-      <div class="skeleton lines"></div>
-      <div class="skeleton image"></div>
-      <div class="skeleton lines"></div>
+      <div class="skeleton title" />
+      <div class="skeleton lines" />
+      <div class="skeleton image" />
+      <div class="skeleton lines" />
     </div>
 
     <div v-else-if="errorMessage" class="card error">
@@ -373,8 +373,8 @@ onBeforeUnmount(() => {
         <button class="btn-outline" @click="reset">New Target</button>
       </div>
 
-      <div class="image-wrap" v-if="targetMeta?.image">
-        <img :src="targetMeta?.image" alt="cover" />
+      <div v-if="targetMeta?.image" class="image-wrap">
+        <img :src="targetMeta?.image" alt="cover">
       </div>
 
       <div class="board">
@@ -391,7 +391,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="keyboard">
-        <div class="kb-row" v-for="row in letters" :key="row">
+        <div v-for="row in letters" :key="row" class="kb-row">
           <template v-if="row === 'QWERTYUIOP'">
             <button v-for="k in row.split('')" :key="k" class="key" :class="keyboardState[k]" @click="pressKey(k)">{{ k }}</button>
           </template>
@@ -406,7 +406,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="hints" v-if="hintList.length">
+  <div v-if="hintList.length" class="hints">
         <div v-for="(h, i) in hintList" :key="i" class="hint">{{ h }}</div>
       </div>
 
@@ -419,8 +419,8 @@ onBeforeUnmount(() => {
 
     <!-- Full-size image modal -->
     <div v-if="showFullImage && targetMeta?.image" class="img-modal" @click.self="closeFullImage">
-      <button class="img-modal-close" @click="closeFullImage" aria-label="Close">×</button>
-      <img :src="targetMeta?.image" alt="cover full" class="img-modal-content" />
+      <button class="img-modal-close" aria-label="Close" @click="closeFullImage">×</button>
+      <img :src="targetMeta?.image" alt="cover full" class="img-modal-content">
     </div>
   </div>
 </template>
@@ -516,7 +516,7 @@ onBeforeUnmount(() => {
 .bad { color: #dc2626; font-weight: 700; }
 
 .btn {
-  background-color: #008cba;
+  background-color: var(--brand-pink-500);
   color: white;
   padding: 8px 14px;
   border: none;
@@ -525,8 +525,8 @@ onBeforeUnmount(() => {
 }
 .btn-outline {
   background: transparent;
-  color: #008cba;
-  border: 2px solid #008cba;
+  color: var(--brand-pink-500);
+  border: 2px solid var(--brand-pink-500);
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;

@@ -1,14 +1,14 @@
 <template>
   <div class="puzzle-game-container">
     <div class="controls">
-      <button @click="resetBoard" class="reset-button">Reset Tiles</button>
-      <button @click="toggleOverlay" class="toggle-overlay-button">
+  <button class="reset-button" @click="resetBoard">Reset Tiles</button>
+  <button class="toggle-overlay-button" @click="toggleOverlay">
         {{ showOverlay ? 'Hide Numbers' : 'Show Numbers' }}
       </button>
     </div>
 
     <div class="board-wrapper" :style="boardWrapperStyle">
-      <img :src="imageUrl" class="underlying-image" />
+  <img :src="imageUrl" class="underlying-image">
       <div class="puzzle-board" :style="boardStyle">
         <div
           v-for="tile in tiles"
@@ -217,10 +217,10 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
 }
 
 .toggle-overlay-button {
-  background-color: #008cba;
+  background-color: var(--brand-pink-500);
 }
 
 .toggle-overlay-button:hover {
-  background-color: #005f7f;
+  background-color: #db2777; /* slightly darker pink */
 }
 </style>

@@ -1,13 +1,11 @@
 <template>
   <div>
-    <header style="background: #222; color: #fff; padding: 1rem;">
-      <nav style="display: flex; gap: 1.5rem;">
-        <NuxtLink to="/" style="color: #fff; text-decoration: none;">Home</NuxtLink>
-        <!-- <NuxtLink to="/" style="color: #fff; text-decoration: none;">About</NuxtLink> -->
-        <NuxtLink to="/game/puzzle" style="color: #fff; text-decoration: none;">Puzzle Game</NuxtLink>
-        <NuxtLink to="/game/anime-guess" style="color: #fff; text-decoration: none;">Guess Anime</NuxtLink>
-        <NuxtLink to="/game/animedle" style="color: #fff; text-decoration: none;">Animedle</NuxtLink>
-        <!-- <NuxtLink to="/" style="color: #fff; text-decoration: none;">Contact</NuxtLink> -->
+    <header class="site-header">
+      <nav class="site-nav">
+        <NuxtLink to="/">Home</NuxtLink>
+        <NuxtLink to="/game/puzzle">Puzzle Game</NuxtLink>
+        <NuxtLink to="/game/anime-guess">Guess Anime</NuxtLink>
+        <NuxtLink to="/game/animedle">Animedle</NuxtLink>
       </nav>
     </header>
     <main style="padding: 2rem;">
@@ -15,5 +13,16 @@
     </main>
   </div>
 </template>
+
+<style scoped>
+.site-header {
+  background: linear-gradient(90deg, var(--brand-purple-400), var(--brand-pink-400));
+  color: #fff;
+  padding: 1rem;
+}
+.site-nav { display: flex; gap: 1.5rem; }
+.site-nav a { color: #fff; text-decoration: none; font-weight: 600; }
+.site-nav a:hover { text-decoration: underline; }
+</style>
 
 

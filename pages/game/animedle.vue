@@ -13,23 +13,23 @@ const newGame = () => { gameKey.value++ }
 
     <div class="controls" style="display:flex; gap:1rem; align-items:center; margin-bottom: 1rem;">
       <label style="display:flex; gap:0.4rem; align-items:center;">
-        <input type="radio" value="anime" v-model="mode" @change="newGame"> Anime
+        <input v-model="mode" type="radio" value="anime" @change="newGame"> Anime
       </label>
       <label style="display:flex; gap:0.4rem; align-items:center;">
-        <input type="radio" value="character" v-model="mode" @change="newGame"> Character
+        <input v-model="mode" type="radio" value="character" @change="newGame"> Character
       </label>
       <button class="btn" @click="newGame">New Game</button>
     </div>
 
     <ClientOnly>
-      <AnimedleGame :mode="mode" :key="mode + ':' + gameKey" />
+  <AnimedleGame :key="mode + ':' + gameKey" :mode="mode" />
     </ClientOnly>
   </div>
 </template>
 
 <style scoped>
 .btn {
-  background-color: #008cba;
+  background-color: var(--brand-pink-500);
   color: white;
   padding: 8px 14px;
   border: none;

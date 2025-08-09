@@ -55,7 +55,7 @@ const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim()
 
 function maskTitleWords(text: string, title: string): string {
   if (!text) return ''
-  const words = Array.from(new Set(title.split(/[\s:;,.!?()\-]+/).filter(Boolean)))
+  const words = Array.from(new Set(title.split(/[\s:;,.!?()-]+/).filter(Boolean)))
   let masked = text
   for (const w of words) {
     const re = new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')
@@ -165,7 +165,7 @@ async function loadRound() {
     const opts = shuffle([correctTitle.value, ...distractors.slice(0, 3)])
     options.value = opts
     correctIndex.value = opts.findIndex(o => normalize(o) === normalize(correctTitle.value))
-  } catch (e: any) {
+  } catch {
     errorMessage.value = 'Failed to load a round. You can retry.'
   } finally {
     isLoading.value = false
@@ -203,10 +203,10 @@ onMounted(loadRound)
 <template>
   <div class="round-container">
     <div v-if="isLoading" class="card">
-      <div class="skeleton title"></div>
-      <div class="skeleton lines"></div>
-      <div class="skeleton image"></div>
-      <div class="skeleton options"></div>
+      <div class="skeleton title" />
+      <div class="skeleton lines" />
+      <div class="skeleton image" />
+      <div class="skeleton options" />
     </div>
 
     <div v-else-if="errorMessage" class="card error">
@@ -235,7 +235,7 @@ onMounted(loadRound)
       </ul>
 
       <div class="image-wrap" :style="{ filter: `blur(${blurAmount}px)` }">
-        <img v-if="imageUrl" :src="imageUrl" alt="Anime image" />
+        <img v-if="imageUrl" :src="imageUrl" alt="Anime image">
       </div>
 
       <div class="options">
@@ -261,8 +261,8 @@ onMounted(loadRound)
 
     <!-- Full-size image modal -->
     <div v-if="showFullImage && imageUrl" class="img-modal" @click.self="closeFullImage">
-      <button class="img-modal-close" @click="closeFullImage" aria-label="Close">×</button>
-      <img :src="imageUrl" alt="Anime image full" class="img-modal-content" />
+      <button class="img-modal-close" aria-label="Close" @click="closeFullImage">×</button>
+      <img :src="imageUrl" alt="Anime image full" class="img-modal-content">
     </div>
   </div>
 </template>
@@ -325,7 +325,7 @@ onMounted(loadRound)
 .bad { color: #dc2626; }
 
 .btn {
-  background-color: #008cba;
+  background-color: var(--brand-pink-500);
   color: white;
   padding: 8px 14px;
   border: none;
@@ -334,8 +334,8 @@ onMounted(loadRound)
 }
 .btn-hint {
   background: transparent;
-  color: #008cba;
-  border: 2px solid #008cba;
+  color: var(--brand-pink-500);
+  border: 2px solid var(--brand-pink-500);
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;

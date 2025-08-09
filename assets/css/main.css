@@ -1,2 +1,37 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+:root {
+  /* Brand palette from the logo (pastel pink/purple) */
+  --brand-pink-50: #fde7f3;
+  --brand-pink-100: #fbdcf0;
+  --brand-pink-300: #f8b4d9; /* light */
+  --brand-pink-400: #f472b6;
+  --brand-pink-500: #ec4899; /* primary accent */
+  --brand-purple-400: #a78bfa; /* logo outline vibe */
+  --brand-bg: #f7e6f6; /* soft page bg from logo */
+  --brand-text: #5b3e7e; /* deep purple text */
+}
+
+html, body {
+  background: var(--brand-bg);
+  color: var(--brand-text);
+}
+
+/* Buttons (fallback when not using Nuxt UI components) */
+button.btn, .btn {
+  background-color: var(--brand-pink-500);
+  color: white;
+}
+.btn:hover { filter: brightness(0.95); }
+
+.btn-outline {
+  color: var(--brand-pink-500);
+  border-color: var(--brand-pink-500);
+}
+
+/* Header tweak to match brand */
+header {
+  background: linear-gradient(90deg, var(--brand-purple-400), var(--brand-pink-400));
+}
+header a { color: white !important; }
