@@ -14,9 +14,8 @@ import 'node:url';
 import '@iconify/utils';
 import 'node:crypto';
 import 'consola';
-import 'node:path';
-import 'better-sqlite3';
 import 'ipx';
+import 'node:path';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
 import 'devalue';
@@ -378,29 +377,29 @@ const unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU = /* @__PURE__ */ defin
     nuxtApp.vueApp.use(head);
   }
 });
-function toArray$1(value) {
+function toArray(value) {
   return Array.isArray(value) ? value : [value];
 }
 async function getRouteRules(arg) {
   const path = typeof arg === "string" ? arg : arg.path;
   {
     useNuxtApp().ssrContext._preloadManifest = true;
-    const _routeRulesMatcher2 = toRouteMatcher(
+    const _routeRulesMatcher = toRouteMatcher(
       createRouter$1({ routes: (/* @__PURE__ */ useRuntimeConfig()).nitro.routeRules })
     );
-    return defu({}, ..._routeRulesMatcher2.matchAll(path).reverse());
+    return defu({}, ..._routeRulesMatcher.matchAll(path).reverse());
   }
 }
 const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-ZsPc_E91.mjs')
+    component: () => import('./index-7bwnqMHM.mjs')
   },
   {
     name: "random",
     path: "/random",
-    component: () => import('./random-ZmuKJ_pV.mjs')
+    component: () => import('./random-oYbKcrfw.mjs')
   },
   {
     name: "game-puzzle",
@@ -555,7 +554,7 @@ const plugin = /* @__PURE__ */ defineNuxtPlugin({
     let __temp, __restore;
     let routerBase = (/* @__PURE__ */ useRuntimeConfig()).app.baseURL;
     const history = ((_a = routerOptions.history) == null ? void 0 : _a.call(routerOptions, routerBase)) ?? createMemoryHistory(routerBase);
-    const routes2 = routerOptions.routes ? ([__temp, __restore] = executeAsync(() => routerOptions.routes(_routes)), __temp = await __temp, __restore(), __temp) ?? _routes : _routes;
+    const routes = routerOptions.routes ? ([__temp, __restore] = executeAsync(() => routerOptions.routes(_routes)), __temp = await __temp, __restore(), __temp) ?? _routes : _routes;
     let startPosition;
     const router = createRouter({
       ...routerOptions,
@@ -576,7 +575,7 @@ const plugin = /* @__PURE__ */ defineNuxtPlugin({
         }
       },
       history,
-      routes: routes2
+      routes
     });
     nuxtApp.vueApp.use(router);
     const previousRoute = shallowRef(router.currentRoute.value);
@@ -658,7 +657,7 @@ const plugin = /* @__PURE__ */ defineNuxtPlugin({
           if (!componentMiddleware) {
             continue;
           }
-          for (const entry2 of toArray$1(componentMiddleware)) {
+          for (const entry2 of toArray(componentMiddleware)) {
             middlewareEntries.add(entry2);
           }
         }
@@ -783,58 +782,8 @@ const revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms = /* @__
     }
   }
 });
-const LazyProseA = defineAsyncComponent(() => import('./ProseA-DkJzkN4J.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseBlockquote = defineAsyncComponent(() => import('./ProseBlockquote-DVwiGsDg.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseCode = defineAsyncComponent(() => import('./ProseCode-CclQqRth.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseEm = defineAsyncComponent(() => import('./ProseEm-DdiNdTT1.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH1 = defineAsyncComponent(() => import('./ProseH1-Cc1mSXBM.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH2 = defineAsyncComponent(() => import('./ProseH2-C-5KGxhS.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH3 = defineAsyncComponent(() => import('./ProseH3-bzvJc9Kz.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH4 = defineAsyncComponent(() => import('./ProseH4-BblHKX-U.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH5 = defineAsyncComponent(() => import('./ProseH5-GBRuiE8r.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseH6 = defineAsyncComponent(() => import('./ProseH6-BNhrHIBT.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseHr = defineAsyncComponent(() => import('./ProseHr-DB45uDBo.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseImg = defineAsyncComponent(() => import('./ProseImg-DfUjXBoi.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseLi = defineAsyncComponent(() => import('./ProseLi-CZxWHB-X.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseOl = defineAsyncComponent(() => import('./ProseOl-CUieetBh.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseP = defineAsyncComponent(() => import('./ProseP-B3VBNjee.mjs').then((r) => r["default"] || r.default || r));
-const LazyProsePre = defineAsyncComponent(() => import('./ProsePre-ByG-rB1z.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseScript = defineAsyncComponent(() => import('./ProseScript-B3ujpe25.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseStrong = defineAsyncComponent(() => import('./ProseStrong-Bioplsm_.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTable = defineAsyncComponent(() => import('./ProseTable-DxFUgVt_.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTbody = defineAsyncComponent(() => import('./ProseTbody-DiKh1_od.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTd = defineAsyncComponent(() => import('./ProseTd-B3YTkAKG.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTh = defineAsyncComponent(() => import('./ProseTh-DGLThEf8.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseThead = defineAsyncComponent(() => import('./ProseThead-Bc4Kdoj3.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseTr = defineAsyncComponent(() => import('./ProseTr-sMMwps9D.mjs').then((r) => r["default"] || r.default || r));
-const LazyProseUl = defineAsyncComponent(() => import('./ProseUl-DoJEcNAA.mjs').then((r) => r["default"] || r.default || r));
-const LazyIcon = defineAsyncComponent(() => import('./index-CWGLN4ww.mjs').then((r) => r["default"] || r.default || r));
+const LazyIcon = defineAsyncComponent(() => import('./index-lL7TX2P1.mjs').then((r) => r["default"] || r.default || r));
 const lazyGlobalComponents = [
-  ["ProseA", LazyProseA],
-  ["ProseBlockquote", LazyProseBlockquote],
-  ["ProseCode", LazyProseCode],
-  ["ProseEm", LazyProseEm],
-  ["ProseH1", LazyProseH1],
-  ["ProseH2", LazyProseH2],
-  ["ProseH3", LazyProseH3],
-  ["ProseH4", LazyProseH4],
-  ["ProseH5", LazyProseH5],
-  ["ProseH6", LazyProseH6],
-  ["ProseHr", LazyProseHr],
-  ["ProseImg", LazyProseImg],
-  ["ProseLi", LazyProseLi],
-  ["ProseOl", LazyProseOl],
-  ["ProseP", LazyProseP],
-  ["ProsePre", LazyProsePre],
-  ["ProseScript", LazyProseScript],
-  ["ProseStrong", LazyProseStrong],
-  ["ProseTable", LazyProseTable],
-  ["ProseTbody", LazyProseTbody],
-  ["ProseTd", LazyProseTd],
-  ["ProseTh", LazyProseTh],
-  ["ProseThead", LazyProseThead],
-  ["ProseTr", LazyProseTr],
-  ["ProseUl", LazyProseUl],
   ["Icon", LazyIcon]
 ];
 const components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4 = /* @__PURE__ */ defineNuxtPlugin({
@@ -1146,15 +1095,6 @@ function useState(...args) {
   }
   return state;
 }
-function useRequestEvent(nuxtApp) {
-  var _a;
-  nuxtApp || (nuxtApp = useNuxtApp());
-  return (_a = nuxtApp.ssrContext) == null ? void 0 : _a.event;
-}
-function useRequestFetch() {
-  var _a;
-  return ((_a = useRequestEvent()) == null ? void 0 : _a.$fetch) || globalThis.$fetch;
-}
 const plugin_server_9Ca9_HhnjAGwBWpwAydRauMHxWoxTDY60BrArRnXN_A = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
   var _a;
   const colorMode = ((_a = nuxtApp.ssrContext) == null ? void 0 : _a.islandContext) ? ref({}) : useState("color-mode", () => reactive({
@@ -1221,11 +1161,6 @@ const plugin_MeUvTuoKUi51yb_kBguab6hdcExVXeTtZtTg9TZZBB8 = /* @__PURE__ */ defin
   // For type portability
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 });
-const prerender_server_sqIxOBipVr4FbVMA9kqWL0wT8FPop6sKAXLVfifsJzk = /* @__PURE__ */ defineNuxtPlugin(async () => {
-  {
-    return;
-  }
-});
 const plugins = [
   unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU,
   plugin,
@@ -1233,11 +1168,10 @@ const plugins = [
   components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4,
   colors_E7kSti5pGZ28QhUUurq6gGRU3l65WuXO_KJC3GQgzFo,
   plugin_server_9Ca9_HhnjAGwBWpwAydRauMHxWoxTDY60BrArRnXN_A,
-  plugin_MeUvTuoKUi51yb_kBguab6hdcExVXeTtZtTg9TZZBB8,
-  prerender_server_sqIxOBipVr4FbVMA9kqWL0wT8FPop6sKAXLVfifsJzk
+  plugin_MeUvTuoKUi51yb_kBguab6hdcExVXeTtZtTg9TZZBB8
 ];
 const layouts = {
-  default: defineAsyncComponent(() => import('./default-Bh7nhTxd.mjs').then((m) => m.default || m))
+  default: defineAsyncComponent(() => import('./default-DB-9Qh7n.mjs').then((m) => m.default || m))
 };
 const LayoutLoader = defineComponent({
   name: "LayoutLoader",
@@ -1502,7 +1436,7 @@ const _sfc_main$1 = {
     const statusMessage = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-BPSfBzGZ.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-BXBAWH-l.mjs'));
     const _Error = defineAsyncComponent(() => import('./error-500-CHuq4Qgb.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
@@ -1585,5 +1519,5 @@ let entry;
 }
 const entry$1 = (ssrContext) => entry(ssrContext);
 
-export { _export_sfc as _, appConfig as a, useAppConfig as b, useRoute as c, useRequestFetch as d, entry$1 as default, useRuntimeConfig as e, fetchDefaults as f, useRequestEvent as g, useNuxtApp as h, useRouter as i, nuxtLinkDefaults as j, asyncDataDefaults as k, createError as l, navigateTo as n, resolveRouteObject as r, useHead as u };
+export { _export_sfc as _, appConfig as a, useAppConfig as b, useNuxtApp as c, useRuntimeConfig as d, entry$1 as default, useRoute as e, fetchDefaults as f, asyncDataDefaults as g, createError as h, useRouter as i, nuxtLinkDefaults as j, navigateTo as n, resolveRouteObject as r, useHead as u };
 //# sourceMappingURL=server.mjs.map

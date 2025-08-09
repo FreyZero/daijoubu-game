@@ -8,9 +8,8 @@ import 'node:url';
 import '@iconify/utils';
 import 'node:crypto';
 import 'consola';
-import 'node:path';
-import 'better-sqlite3';
 import 'ipx';
+import 'node:path';
 
 const cert = process.env.NITRO_SSL_CERT;
 const key = process.env.NITRO_SSL_KEY;
