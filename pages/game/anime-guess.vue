@@ -1,0 +1,88 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const totalRounds = ref(10)
+const roundsPlayed = ref(0)
+const score = ref(0)
+const answeredThisRound = ref(false)
+const roundKey = ref(0) // force remount per round
+
+const handleResult = (correct: boolean) => {
+  if (answeredThisRound.value) return
+  answeredThisRound.value = true
+  roundsPlayed.value += 1
+  if (correct) score.value += 1
+}
+
+const nextRound = () => {
+  if (!answeredThisRound.value) return
+  answeredThisRound.value = false
+  roundKey.value += 1
+}
+
+const resetGame = () => {
+  totalRounds.value = 10
+  roundsPlayed.value = 0
+  score.value = 0
+  answeredThisRound.value = false
+  roundKey.value += 1
+}
+</script>
+
+<template>
+  <div class="page-wrapper" style="max-width: 960px; margin: 0 auto;">
+    <h1 class="text-3xl font-bold mb-4">Guess the Anime</h1>
+
+    <div class="mb-4" style="display:flex; gap:1rem; align-items:center;">
+      <div>Score: {{ score }} / {{ roundsPlayed }}</div>
+      <div>Target Rounds: {{ totalRounds }}</div>
+    </div>
+
+    <ClientOnly>
+      <AnimeGuessRound
+        :key="roundKey"
+        @result="handleResult"
+      />
+    </ClientOnly>
+
+    <div class="mt-6" style="display:flex; gap:0.75rem;">
+      <button
+        class="btn"
+        :disabled="!answeredThisRound || roundsPlayed >= totalRounds"
+        @click="nextRound"
+      >
+        Next Round
+      </button>
+      <button class="btn-outline" @click="resetGame">Reset Game</button>
+    </div>
+
+    <div v-if="roundsPlayed >= totalRounds" class="mt-6 p-4 rounded"
+         style="background:#f1f5f9;">
+      <strong>Game over!</strong>
+      <div>Your final score: {{ score }} / {{ totalRounds }}</div>
+      <div class="mt-2">
+        <button class="btn" @click="resetGame">Play Again</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.btn {
+  background-color: #008cba;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-outline {
+  background: transparent;
+  color: #008cba;
+  border: 2px solid #008cba;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+</style>
