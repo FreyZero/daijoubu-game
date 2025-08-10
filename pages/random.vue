@@ -128,13 +128,14 @@ useHead({ title: 'Random Anime • Daijoubu' })
       <div class="grid gap-6 md:grid-cols-2">
         <div>
           <div class="overflow-hidden rounded-lg border border-gray-200/60 bg-white">
-            <img
+            <NuxtImg
               v-if="imageUrl"
               :src="imageUrl"
               :alt="anime.title"
               class="h-full w-full object-cover"
-              loading="lazy"
-            >
+              format="webp"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
             <div v-else class="flex h-64 items-center justify-center text-gray-400">No image</div>
           </div>
         </div>

@@ -3,7 +3,7 @@
     <header class="site-header" role="banner">
       <div class="header-inner">
         <NuxtLink to="/" class="brand" aria-label="Daijoubu Home">
-          <img src="/images/daijoubu-game-logo-2.png" alt="Daijoubu Game" class="brand-logo">
+          <NuxtImg src="/images/daijoubu-game-logo-2.png" alt="Daijoubu Game" class="brand-logo" width="112" height="40"/>
         </NuxtLink>
 
         <button

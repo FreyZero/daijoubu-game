@@ -436,7 +436,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-if="targetMeta?.image && gameOver" class="image-wrap">
-        <img :src="targetMeta?.image" alt="cover">
+        <NuxtImg :src="targetMeta?.image" alt="cover" format="webp" sizes="(max-width: 768px) 100vw, 50vw" />
       </div>
 
       <div class="board">
@@ -486,7 +486,7 @@ onBeforeUnmount(() => {
     <!-- Full-size image modal -->
     <div v-if="showFullImage && targetMeta?.image" class="img-modal" @click.self="closeFullImage">
       <button class="img-modal-close" aria-label="Close" @click="closeFullImage">×</button>
-      <img :src="targetMeta?.image" alt="cover full" class="img-modal-content">
+      <NuxtImg :src="targetMeta?.image" alt="cover full" class="img-modal-content" format="webp" sizes="100vw" />
     </div>
   </div>
 </template>

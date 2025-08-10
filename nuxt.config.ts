@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
     head: {
+  htmlAttrs: { lang: 'en' },
       title: 'Daijoubu',
       meta: [
         { name: 'description', content: 'A starter template for Nuxt 3 applications.' },
@@ -33,5 +34,10 @@ export default defineNuxtConfig({
       styles: ['normal', 'italic'],
       subsets: ['IBM Plex Sans JP', 'Krub'],
     },
+  },
+
+  image: {
+    // Allow external images from MyAnimeList/Jikan
+    domains: ['cdn.myanimelist.net']
   }
 })

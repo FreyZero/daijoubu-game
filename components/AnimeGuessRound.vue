@@ -48,8 +48,8 @@ const hintsLevel = ref(0) // 0..3
 
 function imageFrom(images?: JikanImages) {
   return (
-    images?.jpg?.large_image_url ||
     images?.webp?.large_image_url ||
+    images?.jpg?.large_image_url ||
     images?.jpg?.image_url ||
     images?.webp?.image_url ||
     images?.jpg?.small_image_url ||
@@ -360,7 +360,7 @@ watch(() => props.mode, () => {
       </ul>
 
       <div v-if="props.mode !== 'noimage'" class="image-wrap" :style="{ filter: `blur(${blurAmount}px)` }">
-        <img v-if="imageUrl" :src="imageUrl" alt="Anime image">
+        <NuxtImg v-if="imageUrl" :src="imageUrl" alt="Anime image" format="webp" width="860" height="1200" />
       </div>
 
       <div class="options">
