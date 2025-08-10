@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { cachedFetch } from '~/utils/cachedFetch'
 
 type Mode = 'anime' | 'character'
 
@@ -250,7 +251,7 @@ async function ensureTopAnimeCache() {
   for (let i = 0; i < pages.length; i += chunkSize) {
     const chunk = pages.slice(i, i + chunkSize)
     const results = await Promise.allSettled(chunk.map(page =>
-      $fetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
+      cachedFetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
         query: { filter: 'bypopularity', limit: 25, page }
       })
     ))
@@ -271,7 +272,7 @@ async function ensureTopCharactersCache() {
   for (let i = 0; i < pages.length; i += chunkSize) {
     const chunk = pages.slice(i, i + chunkSize)
     const results = await Promise.allSettled(chunk.map(page =>
-      $fetch<{ data: JikanCharacter[] }>('https://api.jikan.moe/v4/characters', {
+      cachedFetch<{ data: JikanCharacter[] }>('https://api.jikan.moe/v4/characters', {
         query: { order_by: 'favorites', sort: 'desc', limit: 25, page }
       })
     ))
@@ -336,7 +337,7 @@ async function loadCharacterTarget() {
     let studio: string | null = null
     if (firstAnime?.mal_id) {
       try {
-        const animeRes = await $fetch<{ data: JikanAnime }>(`https://api.jikan.moe/v4/anime/${firstAnime.mal_id}`)
+  const animeRes = await $fetch<{ data: JikanAnime }>(`https://api.jikan.moe/v4/anime/${firstAnime.mal_id}`)
         const a = animeRes.data
         animeTitle = displayTitle(a)
         year = a.year ?? null

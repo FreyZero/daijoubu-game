@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+type Mode = 'anime' | 'character' | 'noimage'
+const mode = ref<Mode>('anime')
 const totalRounds = ref(10)
 const roundsPlayed = ref(0)
 const score = ref(0)
@@ -27,11 +29,28 @@ const resetGame = () => {
   answeredThisRound.value = false
   roundKey.value += 1
 }
+
+const newRound = () => { roundKey.value += 1; answeredThisRound.value = false }
 </script>
 
 <template>
   <div class="page-wrapper">
     <h1 class="text-3xl font-bold mb-4">Guess the Anime</h1>
+
+    <div class="mb-3" style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+      <div style="display:flex; gap:0.75rem; align-items:center;">
+        <label style="display:flex; gap:0.4rem; align-items:center;">
+          <input v-model="mode" type="radio" value="anime" @change="newRound"> Anime
+        </label>
+        <label style="display:flex; gap:0.4rem; align-items:center;">
+          <input v-model="mode" type="radio" value="character" @change="newRound"> Character
+        </label>
+        <label style="display:flex; gap:0.4rem; align-items:center;">
+          <input v-model="mode" type="radio" value="noimage" @change="newRound"> No Image
+        </label>
+        <button class="btn" @click="newRound">New Round</button>
+      </div>
+    </div>
 
     <div class="mb-4" style="display:flex; gap:1rem; align-items:center;">
       <div>Score: {{ score }} / {{ roundsPlayed }}</div>
@@ -41,6 +60,7 @@ const resetGame = () => {
     <ClientOnly>
       <AnimeGuessRound
         :key="roundKey"
+        :mode="mode"
         @result="handleResult"
       />
     </ClientOnly>

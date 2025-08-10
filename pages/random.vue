@@ -18,10 +18,23 @@ interface Anime {
 
 interface AnimeResponse { data: Anime }
 
-const { data, pending, error, refresh } = await useFetch<AnimeResponse>(
-  () => 'https://api.jikan.moe/v4/random/anime',
-  { key: 'random-anime' }
-)
+const data = ref<AnimeResponse | null>(null)
+const pending = ref(true)
+const error = ref<unknown | null>(null)
+
+async function load() {
+  pending.value = true
+  error.value = null
+  try {
+    data.value = await $fetch<AnimeResponse>('https://api.jikan.moe/v4/random/anime')
+  } catch (e) {
+    error.value = e
+  } finally {
+    pending.value = false
+  }
+}
+
+await load()
 
 const anime = computed(() => data.value?.data)
 const imageUrl = computed(() => {
@@ -44,9 +57,9 @@ const synopsisShort = computed(() => {
   return txt.length > 260 && !synopsisOpen.value ? txt.slice(0, 260) + '…' : txt
 })
 
-function reload() {
+async function reload() {
   synopsisOpen.value = false
-  refresh()
+  await load()
 }
 
 useHead({ title: 'Random Anime • Daijoubu' })

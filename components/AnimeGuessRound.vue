@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue'
+import { cachedFetch } from '~/utils/cachedFetch'
 
 type JikanImageEntry = {
+  // Support both anime and character image variants
+  image_url?: string
+  small_image_url?: string
   large_image_url?: string
   large_large_image_url?: string
 }
@@ -22,28 +26,46 @@ type JikanAnime = {
   genres?: JikanGenre[]
 }
 
+// Character API types (from Jikan Characters endpoints)
+type JikanCharacter = { mal_id: number; name: string; images?: JikanImages }
+type JikanCharacterAnimeography = { role: string; anime: { mal_id: number; title: string; images?: JikanImages; type?: string | null } }
+type JikanCharacterFull = { mal_id: number; name: string; images?: JikanImages; anime?: JikanCharacterAnimeography[]; about?: string | null; nicknames?: string[] }
+
+const props = withDefaults(defineProps<{ mode?: 'anime' | 'character' | 'noimage' }>(), { mode: 'anime' })
+
 const emit = defineEmits<{ (e: 'result', correct: boolean): void }>()
 
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)
 
 const anime = ref<JikanAnime | null>(null)
+const character = ref<JikanCharacterFull | JikanCharacter | null>(null)
 const options = ref<string[]>([])
 const correctTitle = ref<string>('')
 const selectedIndex = ref<number | null>(null)
 const correctIndex = ref<number>(-1)
 const hintsLevel = ref(0) // 0..3
 
-const imageUrl = computed(() => {
-  const a = anime.value
-  if (!a) return ''
+function imageFrom(images?: JikanImages) {
   return (
-    a.images?.jpg?.large_image_url ||
-    a.images?.webp?.large_image_url ||
-    a.images?.jpg?.large_large_image_url ||
-    a.images?.webp?.large_large_image_url ||
+    images?.jpg?.large_image_url ||
+    images?.webp?.large_image_url ||
+    images?.jpg?.image_url ||
+    images?.webp?.image_url ||
+    images?.jpg?.small_image_url ||
+    images?.webp?.small_image_url ||
+    images?.jpg?.large_large_image_url ||
+    images?.webp?.large_large_image_url ||
     ''
   )
+}
+
+const imageUrl = computed(() => {
+  if (props.mode === 'character') {
+    const c = character.value as (JikanCharacterFull | JikanCharacter | null)
+    return imageFrom(c?.images)
+  }
+  return imageFrom(anime.value?.images)
 })
 
 const displayTitle = (a: JikanAnime) =>
@@ -90,7 +112,25 @@ const blurAmount = computed(() => {
 
 const primaryStudio = computed(() => anime.value?.studios?.[0]?.name || 'Unknown')
 
+// Character meta for hints
+const charMeta = ref<{ animeTitle?: string | null; year?: number | null; type?: string | null; role?: string | null; about?: string | null; nicknames?: string[] | null } | null>(null)
+
 const extraHints = computed(() => {
+  if (props.mode === 'character') {
+    const m = charMeta.value || {}
+    const about = (m.about || '')
+      .replace(/\r\n/g, '\n')
+      .split('\n')
+      .join(' ')
+    const aboutShort = about ? (about.length > 160 ? about.slice(0, 160) + '…' : about) : null
+    const nicknames = (m.nicknames && m.nicknames.length) ? m.nicknames.join(', ') : null
+    // Exactly 3 slots: Anime, About, Nickname(s)
+    return [
+      m.animeTitle ? `Anime: ${m.animeTitle}` : null,
+      aboutShort ? `About: ${aboutShort}` : null,
+      nicknames ? `Nickname(s): ${nicknames}` : null
+    ].filter(Boolean) as string[]
+  }
   const a = anime.value
   return [
     a?.type ? `Type: ${a.type}` : null,
@@ -98,9 +138,11 @@ const extraHints = computed(() => {
     a?.episodes != null ? `Episodes: ${a.episodes}` : null,
     primaryStudio.value ? `Studio: ${primaryStudio.value}` : null,
     a?.genres ? `Genres: ${a.genres.map(g => g.name).join(', ')}` : null,
-    a?.synopsis ? `Synopsis: ${a.synopsis}` : null
+    a?.synopsis && props.mode !== 'noimage' ? `Synopsis: ${a.synopsis}` : null
   ].filter(Boolean) as string[]
 })
+
+const hintsAvailable = computed(() => extraHints.value.length)
 
 function shuffle<T>(arr: T[]): T[] {
   const a = arr.slice()
@@ -115,7 +157,7 @@ async function fetchRandomAnime(attempts = 4): Promise<JikanAnime> {
   // pick randomly from top 200 by popularity (pages 1..8, 25 per page)
   for (let i = 0; i < attempts; i++) {
     const page = 1 + Math.floor(Math.random() * 8)
-    const res = await $fetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
+    const res = await cachedFetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
       query: { filter: 'bypopularity', page, limit: 25 }
     })
     const candidates = res.data.filter(a => {
@@ -127,7 +169,7 @@ async function fetchRandomAnime(attempts = 4): Promise<JikanAnime> {
     }
   }
   // fallback: first page of top by popularity
-  const res = await $fetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
+  const res = await cachedFetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
     query: { filter: 'bypopularity', page: 1, limit: 25 }
   })
   return res.data[0]
@@ -137,7 +179,7 @@ async function fetchDistractorTitles(excludeTitle: string): Promise<string[]> {
   const exclude = normalize(excludeTitle)
   // keep within top 200 by popularity to match the round's pool
   const page = 1 + Math.floor(Math.random() * 8)
-  const res = await $fetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
+  const res = await cachedFetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
     query: { filter: 'bypopularity', limit: 25, page }
   })
   const pool = res.data
@@ -150,6 +192,53 @@ async function fetchDistractorTitles(excludeTitle: string): Promise<string[]> {
   return shuffle(uniq).slice(0, 10)
 }
 
+async function fetchRandomCharacter(): Promise<{ character: JikanCharacterFull | JikanCharacter; meta: { animeTitle?: string | null; year?: number | null; type?: string | null; role?: string | null; about?: string | null; nicknames?: string[] | null } }> {
+  // pick randomly from popular characters by favorites (pages 1..8)
+  const page = 1 + Math.floor(Math.random() * 8)
+  const res = await cachedFetch<{ data: JikanCharacter[] }>('https://api.jikan.moe/v4/characters', {
+    query: { order_by: 'favorites', sort: 'desc', limit: 25, page }
+  })
+  const pool = res.data.filter(c => c.name?.trim())
+  const chosen = pool[Math.floor(Math.random() * pool.length)]
+  // Enrich with full character to get animeography
+  const meta: { animeTitle?: string | null; year?: number | null; type?: string | null; role?: string | null; about?: string | null; nicknames?: string[] | null } = {}
+  let char: JikanCharacterFull | JikanCharacter = chosen
+  try {
+    const full = await $fetch<{ data: JikanCharacterFull }>(`https://api.jikan.moe/v4/characters/${chosen.mal_id}/full`)
+    char = full.data
+    const first = full.data.anime?.[0]
+    meta.about = full.data.about || null
+    meta.nicknames = (full.data.nicknames && full.data.nicknames.length) ? full.data.nicknames : null
+    if (first?.anime) {
+      meta.animeTitle = first.anime.title || null
+      meta.role = first.role || null
+      if (first.anime.mal_id) {
+        try {
+          const ares = await $fetch<{ data: JikanAnime }>(`https://api.jikan.moe/v4/anime/${first.anime.mal_id}`)
+          meta.year = ares.data.year ?? null
+          meta.type = ares.data.type ?? null
+        } catch {
+          // ignore
+        }
+      }
+    }
+  } catch {
+    // fallback with basic data only
+  }
+  return { character: char, meta }
+}
+
+async function fetchCharacterDistractors(excludeName: string): Promise<string[]> {
+  const exclude = normalize(excludeName)
+  const page = 1 + Math.floor(Math.random() * 8)
+  const res = await cachedFetch<{ data: JikanCharacter[] }>('https://api.jikan.moe/v4/characters', {
+    query: { order_by: 'favorites', sort: 'desc', limit: 25, page }
+  })
+  const pool = res.data.map(c => c.name).filter(Boolean) as string[]
+  const uniq = Array.from(new Set(pool.map(normalize))).map(n => pool.find(t => normalize(t) === n) as string)
+  return uniq.filter(n => normalize(n) !== exclude).slice(0, 10)
+}
+
 async function loadRound() {
   try {
     isLoading.value = true
@@ -157,19 +246,41 @@ async function loadRound() {
     selectedIndex.value = null
     hintsLevel.value = 0
 
-    const a = await fetchRandomAnime()
-    anime.value = a
-    correctTitle.value = displayTitle(a)
-
-    let distractors = await fetchDistractorTitles(correctTitle.value)
-    // If not enough distractors, try again with a different page
-    while (distractors.length < 5) {
-      const more = await fetchDistractorTitles(correctTitle.value)
-      distractors = Array.from(new Set([...distractors, ...more]))
+    if (props.mode === 'character') {
+      const { character: c, meta } = await fetchRandomCharacter()
+  character.value = c
+  charMeta.value = meta
+  anime.value = null
+  correctTitle.value = (('name' in c) ? c.name : '') || ''
+      let distractors = await fetchCharacterDistractors(correctTitle.value)
+      while (distractors.length < 5) {
+        const more = await fetchCharacterDistractors(correctTitle.value)
+        distractors = Array.from(new Set([...distractors, ...more]))
+      }
+      const opts = shuffle([correctTitle.value, ...distractors.slice(0, 5)])
+      options.value = opts
+      correctIndex.value = opts.findIndex(o => normalize(o) === normalize(correctTitle.value))
+    } else {
+      const a = await fetchRandomAnime()
+      anime.value = a
+      character.value = null
+      charMeta.value = null
+      correctTitle.value = displayTitle(a)
+      let distractors = await fetchDistractorTitles(correctTitle.value)
+      // If not enough distractors, try again with a different page
+      while (distractors.length < 5) {
+        const more = await fetchDistractorTitles(correctTitle.value)
+        distractors = Array.from(new Set([...distractors, ...more]))
+      }
+      const opts = shuffle([correctTitle.value, ...distractors.slice(0, 5)])
+      options.value = opts
+      correctIndex.value = opts.findIndex(o => normalize(o) === normalize(correctTitle.value))
+      // In noimage mode, reveal all hints upfront
+      if (props.mode === 'noimage') {
+        // next tick not required; anime.value is already set
+        hintsLevel.value = extraHints.value.length
+      }
     }
-    const opts = shuffle([correctTitle.value, ...distractors.slice(0, 5)])
-    options.value = opts
-    correctIndex.value = opts.findIndex(o => normalize(o) === normalize(correctTitle.value))
   } catch {
     errorMessage.value = 'Failed to load a round. You can retry.'
   } finally {
@@ -188,7 +299,7 @@ function chooseOption(idx: number) {
 
 function revealHint() {
   if (selectedIndex.value !== null) return
-  hintsLevel.value = Math.min(hintsLevel.value + 1, 5)
+  hintsLevel.value = Math.min(hintsLevel.value + 1, hintsAvailable.value || 0)
 }
 
 function retry() {
@@ -203,6 +314,11 @@ watch(() => selectedIndex.value, (v) => {
 const closeFullImage = () => { showFullImage.value = false }
 
 onMounted(loadRound)
+
+// If mode changes, auto-reload a round
+watch(() => props.mode, () => {
+  retry()
+})
 </script>
 
 <template>
@@ -221,9 +337,14 @@ onMounted(loadRound)
 
     <div v-else class="card">
       <div class="header">
-        <h2>Which anime is this?</h2>
-        <button class="btn-hint" :disabled="selectedIndex !== null" @click="revealHint">
-          Reveal Hint ({{ 5 - hintsLevel }} left)
+        <h2>{{ props.mode === 'character' ? 'Who is this character?' : 'Which anime is this?' }}</h2>
+        <button
+          v-if="props.mode !== 'noimage'"
+          class="btn-hint"
+          :disabled="selectedIndex !== null || hintsLevel >= hintsAvailable"
+          @click="revealHint"
+        >
+          Reveal Hint ({{ Math.max((hintsAvailable || 0) - hintsLevel, 0) }} left)
         </button>
       </div>
 
@@ -232,15 +353,13 @@ onMounted(loadRound)
         <div class="synopsis-text">{{ synopsisDisplay }}</div>
       </div> -->
 
-      <ul class="hints">
-        <li v-if="hintsLevel >= 1"><strong>{{ extraHints[0].split(': ')[0] }}:</strong> {{ extraHints[0].split(': ')[1] }}</li>
-        <li v-if="hintsLevel >= 2"><strong>{{ extraHints[1].split(': ')[0] }}:</strong> {{ extraHints[1].split(': ')[1] }}</li>
-        <li v-if="hintsLevel >= 3"><strong>{{ extraHints[2].split(': ')[0] }}:</strong> {{ extraHints[2].split(': ')[1] }}</li>
-        <li v-if="hintsLevel >= 4"><strong>{{ extraHints[3].split(': ')[0] }}:</strong> {{ extraHints[3].split(': ')[1] }}</li>
-        <li v-if="hintsLevel >= 5"><strong>{{ extraHints[4].split(': ')[0] }}:</strong> {{ extraHints[4].split(': ')[1] }}</li>
+      <ul v-if="extraHints.length" class="hints">
+        <li v-for="(h, i) in extraHints.slice(0, hintsLevel)" :key="i">
+          <strong>{{ h.split(': ')[0] }}:</strong> {{ h.split(': ')[1] }}
+        </li>
       </ul>
 
-      <div class="image-wrap" :style="{ filter: `blur(${blurAmount}px)` }">
+      <div v-if="props.mode !== 'noimage'" class="image-wrap" :style="{ filter: `blur(${blurAmount}px)` }">
         <img v-if="imageUrl" :src="imageUrl" alt="Anime image">
       </div>
 
