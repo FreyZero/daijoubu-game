@@ -337,14 +337,14 @@ watch(() => props.mode, () => {
 
     <div v-else class="card">
       <div class="header">
-        <h2>{{ props.mode === 'character' ? 'Who is this character?' : 'Which anime is this?' }}</h2>
+        <h2 class="font-bold">{{ props.mode === 'character' ? 'Who is this character?' : 'Which anime is this?' }}</h2>
         <button
           v-if="props.mode !== 'noimage'"
           class="btn-hint"
           :disabled="selectedIndex !== null || hintsLevel >= hintsAvailable"
           @click="revealHint"
         >
-          Reveal Hint ({{ Math.max((hintsAvailable || 0) - hintsLevel, 0) }} left)
+          Reveal Hint <span class="no-wrap">({{ Math.max((hintsAvailable || 0) - hintsLevel, 0) }} left)</span>
         </button>
       </div>
 

@@ -8,12 +8,32 @@ const roundsPlayed = ref(0)
 const score = ref(0)
 const answeredThisRound = ref(false)
 const roundKey = ref(0) // force remount per round
+const toast = useToast()
 
 const handleResult = (correct: boolean) => {
   if (answeredThisRound.value) return
   answeredThisRound.value = true
   roundsPlayed.value += 1
-  if (correct) score.value += 1
+  if (correct) { 
+    score.value += 1
+    toast.add({
+      title: 'Correct',
+      description: 'You guessed the anime correctly!',
+      color: 'success',
+      icon: 'i-heroicons-check-circle-solid',
+      orientation: 'vertical',
+      duration: 2000
+    })
+  } else {
+    toast.add({
+      title: 'Incorrect',
+      description: 'You guessed the anime incorrectly.',
+      color: 'error',
+      icon: 'i-heroicons-x-circle-solid',
+      orientation: 'horizontal',
+      duration: 2000
+    })
+  }
 }
 
 const nextRound = () => {
@@ -48,13 +68,24 @@ const newRound = () => { roundKey.value += 1; answeredThisRound.value = false }
         <label style="display:flex; gap:0.4rem; align-items:center;">
           <input v-model="mode" type="radio" value="noimage" @change="newRound"> No Image
         </label>
-        <button class="btn" @click="newRound">New Round</button>
+        <!-- <button class="btn" @click="newRound">New Round</button> -->
       </div>
     </div>
 
     <div class="mb-4" style="display:flex; gap:1rem; align-items:center;">
       <div>Score: {{ score }} / {{ roundsPlayed }}</div>
       <div>Target Rounds: {{ totalRounds }}</div>
+    </div>
+
+    <div
+      v-if="roundsPlayed >= totalRounds"
+      class="my-6 p-4 rounded-lg bg-default"
+    >
+      <strong>Game over!</strong>
+      <div>Your final score: {{ score }} / {{ totalRounds }}</div>
+      <div class="mt-2">
+        <button class="btn" @click="resetGame">Play Again</button>
+      </div>
     </div>
 
     <ClientOnly>
@@ -74,18 +105,6 @@ const newRound = () => { roundKey.value += 1; answeredThisRound.value = false }
       >
         Next Round
       </button>
-    </div>
-
-    <div
-      v-if="roundsPlayed >= totalRounds"
-      class="mt-6 p-4 rounded"
-      style="background:#f1f5f9;"
-    >
-      <strong>Game over!</strong>
-      <div>Your final score: {{ score }} / {{ totalRounds }}</div>
-      <div class="mt-2">
-        <button class="btn" @click="resetGame">Play Again</button>
-      </div>
     </div>
   </div>
 </template>

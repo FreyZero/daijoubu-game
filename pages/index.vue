@@ -17,7 +17,7 @@ const games: Game[] = [
   {
     title: 'Guess the Anime',
     to: '/game/anime-guess',
-    description: 'Multiple‑choice round with clues, studios, and synopsis hints.',
+    description: 'Multiple‑choice round with clues, genres, and synopsis hints.',
     icon: 'i-heroicons-question-mark-circle-solid'
   },
   {
@@ -56,11 +56,11 @@ const games: Game[] = [
             </div>
           </template>
 
-          <p class="text-gray-500">{{ g.description }}</p>
+          <p class="text-default">{{ g.description }}</p>
 
           <template #footer>
             <div class="flex items-center justify-between">
-              <span class="text-primary group-hover:underline">Learn more</span>
+              <span class="text-primary group-hover:underline"></span>
               <UButton color="primary" icon="i-heroicons-play-solid" class="cursor-pointer">Play</UButton>
             </div>
           </template>
