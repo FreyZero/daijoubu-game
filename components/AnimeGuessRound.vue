@@ -138,7 +138,7 @@ const extraHints = computed(() => {
     a?.episodes != null ? `Episodes: ${a.episodes}` : null,
     primaryStudio.value ? `Studio: ${primaryStudio.value}` : null,
     a?.genres ? `Genres: ${a.genres.map(g => g.name).join(', ')}` : null,
-    a?.synopsis && props.mode !== 'noimage' ? `Synopsis: ${a.synopsis}` : null
+    a?.synopsis && props.mode !== 'noimage' ? `Synopsis: ${a.synopsis.slice(0, 160)}...` : null
   ].filter(Boolean) as string[]
 })
 
@@ -156,7 +156,7 @@ function shuffle<T>(arr: T[]): T[] {
 async function fetchRandomAnime(attempts = 4): Promise<JikanAnime> {
   // pick randomly from top 200 by popularity (pages 1..8, 25 per page)
   for (let i = 0; i < attempts; i++) {
-    const page = 1 + Math.floor(Math.random() * 8)
+    const page = 1 + Math.floor(Math.random() * 12)
     const res = await cachedFetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
       query: { filter: 'bypopularity', page, limit: 25 }
     })
@@ -178,7 +178,7 @@ async function fetchRandomAnime(attempts = 4): Promise<JikanAnime> {
 async function fetchDistractorTitles(excludeTitle: string): Promise<string[]> {
   const exclude = normalize(excludeTitle)
   // keep within top 200 by popularity to match the round's pool
-  const page = 1 + Math.floor(Math.random() * 8)
+  const page = 1 + Math.floor(Math.random() * 12)
   const res = await cachedFetch<{ data: JikanAnime[] }>('https://api.jikan.moe/v4/top/anime', {
     query: { filter: 'bypopularity', limit: 25, page }
   })
@@ -194,7 +194,7 @@ async function fetchDistractorTitles(excludeTitle: string): Promise<string[]> {
 
 async function fetchRandomCharacter(): Promise<{ character: JikanCharacterFull | JikanCharacter; meta: { animeTitle?: string | null; year?: number | null; type?: string | null; role?: string | null; about?: string | null; nicknames?: string[] | null } }> {
   // pick randomly from popular characters by favorites (pages 1..8)
-  const page = 1 + Math.floor(Math.random() * 8)
+  const page = 1 + Math.floor(Math.random() * 12)
   const res = await cachedFetch<{ data: JikanCharacter[] }>('https://api.jikan.moe/v4/characters', {
     query: { order_by: 'favorites', sort: 'desc', limit: 25, page }
   })
@@ -230,7 +230,7 @@ async function fetchRandomCharacter(): Promise<{ character: JikanCharacterFull |
 
 async function fetchCharacterDistractors(excludeName: string): Promise<string[]> {
   const exclude = normalize(excludeName)
-  const page = 1 + Math.floor(Math.random() * 8)
+  const page = 1 + Math.floor(Math.random() * 12)
   const res = await cachedFetch<{ data: JikanCharacter[] }>('https://api.jikan.moe/v4/characters', {
     query: { order_by: 'favorites', sort: 'desc', limit: 25, page }
   })
@@ -307,11 +307,11 @@ function retry() {
 }
 
 // Show full-size image when round ends
-const showFullImage = ref(false)
-watch(() => selectedIndex.value, (v) => {
-  if (v !== null) showFullImage.value = true
-})
-const closeFullImage = () => { showFullImage.value = false }
+// const showFullImage = ref(false)
+// watch(() => selectedIndex.value, (v) => {
+//   if (v !== null) showFullImage.value = true
+// })
+// const closeFullImage = () => { showFullImage.value = false }
 
 onMounted(loadRound)
 
@@ -375,10 +375,10 @@ watch(() => props.mode, () => {
     </div>
 
     <!-- Full-size image modal -->
-    <div v-if="showFullImage && imageUrl" class="img-modal" @click.self="closeFullImage">
+    <!-- <div v-if="showFullImage && imageUrl" class="img-modal" @click.self="closeFullImage">
       <button class="img-modal-close" aria-label="Close" @click="closeFullImage">×</button>
       <img :src="imageUrl" alt="Anime image full" class="img-modal-content">
-    </div>
+    </div> -->
   </div>
 </template>
 

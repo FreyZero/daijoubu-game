@@ -8,7 +8,6 @@ const roundsPlayed = ref(0)
 const score = ref(0)
 const answeredThisRound = ref(false)
 const roundKey = ref(0) // force remount per round
-const toast = useToast()
 
 const handleResult = (correct: boolean) => {
   if (answeredThisRound.value) return
@@ -16,23 +15,6 @@ const handleResult = (correct: boolean) => {
   roundsPlayed.value += 1
   if (correct) {
     score.value += 1
-    toast.add({
-      title: 'Correct',
-      description: 'You guessed the anime correctly!',
-      color: 'success',
-      icon: 'i-heroicons-check-circle-solid',
-      orientation: 'vertical',
-      duration: 2000
-    })
-  } else {
-    toast.add({
-      title: 'Incorrect',
-      description: 'You guessed the anime incorrectly.',
-      color: 'error',
-      icon: 'i-mynaui-letter-x-circle-solid',
-      orientation: 'horizontal',
-      duration: 2000
-    })
   }
 }
 
