@@ -13,8 +13,8 @@ import ImageUpload from '~/components/ImageUpload.vue';
 import PuzzleBoard from '~/components/PuzzleBoard.vue';
 
 const imageUrl = ref(null);
-const boardCols = ref(null); // จำนวนคอลัมน์ของแผ่นป้าย
-const boardRows = ref(null); // จำนวนแถวของแผ่นป้าย
+const boardCols = ref(5);
+const boardRows = ref(5);
 
 const handleImageUploaded = (url) => {
   imageUrl.value = url;
@@ -34,6 +34,7 @@ const handleBoardDimensionsSet = (dimensions) => {
   padding: 20px var(--page-x);
   font-family: Arial, sans-serif;
   width: 100%;
+  gap: 20px;
 }
 
 h1 {

@@ -1,22 +1,18 @@
 <template>
   <div class="puzzle-game-container">
     <div class="controls">
-  <button class="reset-button" @click="resetBoard">Reset Tiles</button>
-  <button class="toggle-overlay-button" @click="toggleOverlay">
+      <button class="reset-button" @click="resetBoard">Reset Tiles</button>
+      <button class="toggle-overlay-button" @click="toggleOverlay">
         {{ showOverlay ? 'Hide Numbers' : 'Show Numbers' }}
       </button>
     </div>
 
     <div class="board-wrapper" :style="boardWrapperStyle">
-  <img :src="imageUrl" class="underlying-image">
+      <img :src="imageUrl" class="underlying-image">
       <div class="puzzle-board" :style="boardStyle">
-        <div
-          v-for="tile in tiles"
-          :key="tile.id"
-          class="puzzle-tile"
+        <div v-for="tile in tiles" :key="tile.id" class="puzzle-tile"
           :class="{ 'is-hidden': tile.isHidden, 'show-overlay': showOverlay && !tile.isHidden }"
-          @click="revealTile(tile.id)"
-        >
+          @click="revealTile(tile.id)">
           <span v-if="showOverlay && !tile.isHidden" class="tile-number">{{ tile.id + 1 }}</span>
         </div>
       </div>
@@ -125,7 +121,8 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  width: 100%; /* Let container be full width for board-wrapper */
+  width: 100%;
+  /* Let container be full width for board-wrapper */
 }
 
 .controls {
@@ -138,7 +135,8 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
 .board-wrapper {
   position: relative;
   width: min(92vw, 900px);
-  max-width: 900px; /* Max width for large screens */
+  max-width: 900px;
+  /* Max width for large screens */
   border: 2px solid #333;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   overflow: hidden;
@@ -154,7 +152,8 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Keep aspect ratio */
+  object-fit: contain;
+  /* Keep aspect ratio */
 }
 
 .puzzle-board {
@@ -167,8 +166,10 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
 }
 
 .puzzle-tile {
-  background-color: rgba(0, 0, 0, 0.7); /* Tile color */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Tile border */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Tile color */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Tile border */
   cursor: pointer;
   box-sizing: border-box;
   display: flex;
@@ -222,10 +223,13 @@ watch(() => [props.imageUrl, props.boardCols, props.boardRows], async ([newImage
 }
 
 .toggle-overlay-button:hover {
-  background-color: #db2777; /* slightly darker pink */
+  background-color: #db2777;
+  /* slightly darker pink */
 }
 
 @media (min-width: 768px) {
-  .board-wrapper { width: min(80vw, 900px); }
+  .board-wrapper {
+    width: min(80vw, 900px);
+  }
 }
 </style>

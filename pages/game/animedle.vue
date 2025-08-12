@@ -28,8 +28,20 @@ const newGame = () => { gameKey.value++ }
 </template>
 
 <style scoped>
-.page-wrapper { max-width: 960px; margin: 0 auto; padding: 0 var(--page-x); }
-.controls { display:flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items:center; margin-bottom: 1rem; }
+.page-wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 var(--page-x);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .btn {
   background-color: var(--brand-pink-500);
   color: white;
@@ -38,7 +50,10 @@ const newGame = () => { gameKey.value++ }
   border-radius: 6px;
   cursor: pointer;
 }
+
 @media (max-width: 480px) {
-  h1 { font-size: 1.5rem; }
+  h1 {
+    font-size: 1.5rem;
+  }
 }
 </style>

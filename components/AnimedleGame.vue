@@ -117,8 +117,8 @@ function initBoard(len: number) {
   won.value = false
 }
 
-function applyStatuses(guess: string, target: string): ('correct'|'present'|'absent')[] {
-  const res: ('correct'|'present'|'absent')[] = Array(target.length).fill('absent')
+function applyStatuses(guess: string, target: string): ('correct' | 'present' | 'absent')[] {
+  const res: ('correct' | 'present' | 'absent')[] = Array(target.length).fill('absent')
   const targetArr = target.split('')
   const guessArr = guess.split('')
   const counts: Record<string, number> = {}
@@ -145,7 +145,7 @@ function applyStatuses(guess: string, target: string): ('correct'|'present'|'abs
   return res
 }
 
-function updateKeyboard(guess: string, rowStatuses: ('correct'|'present'|'absent')[]) {
+function updateKeyboard(guess: string, rowStatuses: ('correct' | 'present' | 'absent')[]) {
   for (let i = 0; i < guess.length; i++) {
     const ch = guess[i]
     const s = rowStatuses[i]
@@ -337,7 +337,7 @@ async function loadCharacterTarget() {
     let studio: string | null = null
     if (firstAnime?.mal_id) {
       try {
-  const animeRes = await $fetch<{ data: JikanAnime }>(`https://api.jikan.moe/v4/anime/${firstAnime.mal_id}`)
+        const animeRes = await $fetch<{ data: JikanAnime }>(`https://api.jikan.moe/v4/anime/${firstAnime.mal_id}`)
         const a = animeRes.data
         animeTitle = displayTitle(a)
         year = a.year ?? null
@@ -403,18 +403,9 @@ onBeforeUnmount(() => {
 <template>
   <div class="animedle" @click="focusHidden">
     <!-- Hidden input to capture mobile typing -->
-  <input
-      ref="hiddenEl"
-      v-model="hiddenValue"
-      class="sr-only-input"
-      aria-hidden="true"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="characters"
-      spellcheck="false"
-      @keydown="onHiddenKeydown"
-      @input="onHiddenInput"
-  >
+    <input ref="hiddenEl" v-model="hiddenValue" class="sr-only-input" aria-hidden="true" autocomplete="off"
+      autocorrect="off" autocapitalize="characters" spellcheck="false" @keydown="onHiddenKeydown"
+      @input="onHiddenInput">
 
     <div v-if="isLoading" class="card">
       <div class="skeleton title" />
@@ -441,12 +432,7 @@ onBeforeUnmount(() => {
 
       <div class="board">
         <div v-for="rowIdx in attemptsMax" :key="rowIdx" class="row">
-          <div
-            v-for="colIdx in wordLength"
-            :key="colIdx"
-            class="tile"
-            :class="statuses[rowIdx - 1]?.[colIdx - 1]"
-          >
+          <div v-for="colIdx in wordLength" :key="colIdx" class="tile" :class="statuses[rowIdx - 1]?.[colIdx - 1]">
             {{ (guesses[rowIdx - 1] || '')[colIdx - 1] || '' }}
           </div>
         </div>
@@ -454,15 +440,8 @@ onBeforeUnmount(() => {
 
       <div class="keyboard">
         <div class="kb-grid" role="group" aria-label="On-screen keyboard">
-          <button
-            v-for="k in keysAZ"
-            :key="k"
-            class="key"
-            :class="keyboardState[k]"
-            type="button"
-            :aria-label="`Key ${k}`"
-            @click="pressKey(k)"
-          >
+          <button v-for="k in keysAZ" :key="k" class="key" :class="keyboardState[k]" type="button"
+            :aria-label="`Key ${k}`" @click="pressKey(k)">
             {{ k }}
           </button>
         </div>
@@ -472,7 +451,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-    <div v-if="hintList.length" class="hints">
+      <div v-if="hintList.length" class="hints">
         <div v-for="(h, i) in hintList" :key="i" class="hint">{{ h }}</div>
       </div>
 
@@ -492,7 +471,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.animedle { width: 100%; }
+.animedle {
+  width: 100%;
+}
+
 /* Hidden, but focusable input */
 .sr-only-input {
   position: absolute;
@@ -501,12 +483,14 @@ onBeforeUnmount(() => {
   height: 1px;
   opacity: 0;
 }
+
 .card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 16px;
 }
+
 .top {
   display: flex;
   gap: 12px;
@@ -514,6 +498,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   margin-bottom: 12px;
 }
+
 .image-wrap {
   width: 50%;
   overflow: hidden;
@@ -521,19 +506,27 @@ onBeforeUnmount(() => {
   border: 1px solid #e2e8f0;
   margin: 10px auto 14px;
 }
-.image-wrap img { width: 100%; height: auto; object-fit: cover; display: block; }
+
+.image-wrap img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
 
 .board {
   display: grid;
   gap: 8px;
   margin: 12px 0;
 }
+
 .row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
   grid-auto-columns: 36px;
   gap: 8px;
 }
+
 .tile {
   height: 44px;
   min-width: 36px;
@@ -545,21 +538,43 @@ onBeforeUnmount(() => {
   color: #0f172a;
   background: #f8fafc;
 }
-.tile.correct { background: #16a34a; color: white; border-color: #16a34a; }
-.tile.present { background: #f59e0b; color: white; border-color: #f59e0b; }
-.tile.absent { background: #334155; color: white; border-color: #334155; }
 
-.keyboard { display: grid; gap: 10px; margin-top: 8px; }
+.tile.correct {
+  background: #16a34a;
+  color: white;
+  border-color: #16a34a;
+}
+
+.tile.present {
+  background: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+}
+
+.tile.absent {
+  background: #334155;
+  color: white;
+  border-color: #334155;
+}
+
+.keyboard {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
 .kb-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
   gap: 6px;
 }
+
 .kb-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(80px, 1fr));
   gap: 8px;
 }
+
 .key {
   background: #e2e8f0;
   color: #0f172a;
@@ -570,12 +585,32 @@ onBeforeUnmount(() => {
   min-width: 36px;
   font-weight: 600;
 }
-.key.action { min-height: 40px; }
-.key.correct { background: #16a34a; color: white; }
-.key.present { background: #f59e0b; color: white; }
-.key.absent { background: #334155; color: white; }
 
-.hints { margin-top: 12px; display: grid; gap: 6px; }
+.key.action {
+  min-height: 40px;
+}
+
+.key.correct {
+  background: #16a34a;
+  color: white;
+}
+
+.key.present {
+  background: #f59e0b;
+  color: white;
+}
+
+.key.absent {
+  background: #334155;
+  color: white;
+}
+
+.hints {
+  margin-top: 12px;
+  display: grid;
+  gap: 6px;
+}
+
 .hint {
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
@@ -585,9 +620,19 @@ onBeforeUnmount(() => {
   font-size: 0.95rem;
 }
 
-.result { margin-top: 14px; }
-.ok { color: #16a34a; font-weight: 700; }
-.bad { color: #dc2626; font-weight: 700; }
+.result {
+  margin-top: 14px;
+}
+
+.ok {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.bad {
+  color: #dc2626;
+  font-weight: 700;
+}
 
 .btn {
   background-color: var(--brand-pink-500);
@@ -597,6 +642,7 @@ onBeforeUnmount(() => {
   border-radius: 6px;
   cursor: pointer;
 }
+
 .btn-outline {
   background: transparent;
   color: var(--brand-pink-500);
@@ -605,28 +651,50 @@ onBeforeUnmount(() => {
   border-radius: 6px;
   cursor: pointer;
 }
-.skeleton { background: #e5e7eb; border-radius: 6px; margin: 8px 0; }
-.skeleton.title { height: 18px; width: 40%; }
-.skeleton.lines { height: 60px; }
-.skeleton.image { height: 180px; }
-.error { display: flex; gap: 10px; align-items: center; }
+
+.skeleton {
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin: 8px 0;
+}
+
+.skeleton.title {
+  height: 18px;
+  width: 40%;
+}
+
+.skeleton.lines {
+  height: 60px;
+}
+
+.skeleton.image {
+  height: 180px;
+}
+
+.error {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 
 /* Full-size image modal */
 .img-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
 }
+
 .img-modal-content {
   max-width: 95vw;
   max-height: 90vh;
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
+
 .img-modal-close {
   position: absolute;
   top: 16px;
@@ -635,7 +703,7 @@ onBeforeUnmount(() => {
   height: 36px;
   border: none;
   border-radius: 9999px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   color: #111827;
   font-size: 22px;
   line-height: 1;

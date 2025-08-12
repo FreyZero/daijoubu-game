@@ -40,13 +40,8 @@ const games: Game[] = [
 
     <!-- All Games -->
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <NuxtLink
-        v-for="g in games"
-        :key="g.to"
-        :to="g.to"
-        class="group block focus:outline-none"
-        :aria-label="`Play ${g.title}`"
-      >
+      <NuxtLink v-for="g in games" :key="g.to" :to="g.to" class="group block focus:outline-none"
+        :aria-label="`Play ${g.title}`">
         <UCard class="transition hover:shadow-lg group-focus:shadow-lg">
           <template #header>
             <div class="flex items-center gap-3">

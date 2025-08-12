@@ -148,7 +148,7 @@ function shuffle<T>(arr: T[]): T[] {
   const a = arr.slice()
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
+      ;[a[i], a[j]] = [a[j], a[i]]
   }
   return a
 }
@@ -248,10 +248,10 @@ async function loadRound() {
 
     if (props.mode === 'character') {
       const { character: c, meta } = await fetchRandomCharacter()
-  character.value = c
-  charMeta.value = meta
-  anime.value = null
-  correctTitle.value = (('name' in c) ? c.name : '') || ''
+      character.value = c
+      charMeta.value = meta
+      anime.value = null
+      correctTitle.value = (('name' in c) ? c.name : '') || ''
       let distractors = await fetchCharacterDistractors(correctTitle.value)
       while (distractors.length < 5) {
         const more = await fetchCharacterDistractors(correctTitle.value)
@@ -338,13 +338,9 @@ watch(() => props.mode, () => {
     <div v-else class="card">
       <div class="header">
         <h2 class="font-bold">{{ props.mode === 'character' ? 'Who is this character?' : 'Which anime is this?' }}</h2>
-        <button
-          v-if="props.mode !== 'noimage'"
-          class="btn-hint"
-          :disabled="selectedIndex !== null || hintsLevel >= hintsAvailable"
-          @click="revealHint"
-        >
-          Reveal Hint <span class="no-wrap">({{ Math.max((hintsAvailable || 0) - hintsLevel, 0) }} left)</span>
+        <button v-if="props.mode !== 'noimage'" class="btn-hint"
+          :disabled="selectedIndex !== null || hintsLevel >= hintsAvailable" @click="revealHint">
+          Hint <span class="no-wrap">({{ Math.max((hintsAvailable || 0) - hintsLevel, 0) }} left)</span>
         </button>
       </div>
 
@@ -364,16 +360,10 @@ watch(() => props.mode, () => {
       </div>
 
       <div class="options">
-        <button
-          v-for="(opt, idx) in options"
-          :key="idx"
-          class="opt"
-          :class="{
-            correct: selectedIndex !== null && idx === correctIndex,
-            wrong: selectedIndex === idx && idx !== correctIndex
-          }"
-          @click="chooseOption(idx)"
-        >
+        <button v-for="(opt, idx) in options" :key="idx" class="opt" :class="{
+          correct: selectedIndex !== null && idx === correctIndex,
+          wrong: selectedIndex === idx && idx !== correctIndex
+        }" @click="chooseOption(idx)">
           {{ opt }}
         </button>
       </div>
@@ -393,13 +383,17 @@ watch(() => props.mode, () => {
 </template>
 
 <style scoped>
-.round-container { width: 100%; }
+.round-container {
+  width: 100%;
+}
+
 .card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 16px;
 }
+
 .header {
   display: flex;
   align-items: center;
@@ -407,19 +401,30 @@ watch(() => props.mode, () => {
   gap: 12px;
   margin-bottom: 12px;
 }
-.synopsis { margin: 10px 0; }
-.synopsis-text { white-space: pre-wrap; color: #334155; }
 
-.hints { margin: 8px 0 14px; padding-left: 18px; color: #475569; }
+.synopsis {
+  margin: 10px 0;
+}
+
+.synopsis-text {
+  white-space: pre-wrap;
+  color: #334155;
+}
+
+.hints {
+  margin: 8px 0 14px;
+  padding-left: 18px;
+  color: #475569;
+}
 
 .image-wrap {
-  width: 100%;
-  max-height: 360px;
+  width: 300px;
   overflow: hidden;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-  margin: 10px 0 14px;
+  margin: 10px auto 14px;
 }
+
 .image-wrap img {
   width: 100%;
   height: auto;
@@ -432,6 +437,7 @@ watch(() => props.mode, () => {
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
 }
+
 .opt {
   text-align: left;
   background: #0f172a;
@@ -441,13 +447,31 @@ watch(() => props.mode, () => {
   border-radius: 8px;
   cursor: pointer;
 }
-.opt:hover { background: #1e293b; }
-.opt.correct { background: #16a34a; }
-.opt.wrong { background: #dc2626; }
 
-.result { margin-top: 12px; }
-.ok { color: #16a34a; font-weight: 600; }
-.bad { color: #dc2626; }
+.opt:hover {
+  background: #1e293b;
+}
+
+.opt.correct {
+  background: #16a34a;
+}
+
+.opt.wrong {
+  background: #dc2626;
+}
+
+.result {
+  margin-top: 12px;
+}
+
+.ok {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.bad {
+  color: #dc2626;
+}
 
 .btn {
   background-color: var(--brand-pink-500);
@@ -457,6 +481,7 @@ watch(() => props.mode, () => {
   border-radius: 6px;
   cursor: pointer;
 }
+
 .btn-hint {
   background: transparent;
   color: var(--brand-pink-500);
@@ -465,31 +490,59 @@ watch(() => props.mode, () => {
   border-radius: 6px;
   cursor: pointer;
 }
-.btn-hint:disabled { opacity: 0.6; cursor: not-allowed; }
 
-.skeleton { background: #e5e7eb; border-radius: 6px; margin: 8px 0; }
-.skeleton.title { height: 18px; width: 40%; }
-.skeleton.lines { height: 60px; }
-.skeleton.image { height: 220px; }
-.skeleton.options { height: 44px; }
-.error { display: flex; gap: 10px; align-items: center; }
+.btn-hint:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.skeleton {
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin: 8px 0;
+}
+
+.skeleton.title {
+  height: 18px;
+  width: 40%;
+}
+
+.skeleton.lines {
+  height: 60px;
+}
+
+.skeleton.image {
+  height: 220px;
+}
+
+.skeleton.options {
+  height: 44px;
+}
+
+.error {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 
 /* Full-size image modal */
 .img-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 50;
 }
+
 .img-modal-content {
   max-width: 95vw;
   max-height: 90vh;
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
+
 .img-modal-close {
   position: absolute;
   top: 16px;
@@ -498,7 +551,7 @@ watch(() => props.mode, () => {
   height: 36px;
   border: none;
   border-radius: 9999px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   color: #111827;
   font-size: 22px;
   line-height: 1;

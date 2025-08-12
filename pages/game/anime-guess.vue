@@ -14,7 +14,7 @@ const handleResult = (correct: boolean) => {
   if (answeredThisRound.value) return
   answeredThisRound.value = true
   roundsPlayed.value += 1
-  if (correct) { 
+  if (correct) {
     score.value += 1
     toast.add({
       title: 'Correct',
@@ -29,12 +29,18 @@ const handleResult = (correct: boolean) => {
       title: 'Incorrect',
       description: 'You guessed the anime incorrectly.',
       color: 'error',
-      icon: 'i-heroicons-x-circle-solid',
+      icon: 'i-mynaui-letter-x-circle-solid',
       orientation: 'horizontal',
       duration: 2000
     })
   }
 }
+
+watch(roundsPlayed, (newVal) => {
+  if (newVal >= totalRounds.value) {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+})
 
 const nextRound = () => {
   if (!answeredThisRound.value) return
@@ -77,10 +83,7 @@ const newRound = () => { roundKey.value += 1; answeredThisRound.value = false }
       <div>Target Rounds: {{ totalRounds }}</div>
     </div>
 
-    <div
-      v-if="roundsPlayed >= totalRounds"
-      class="my-6 p-4 rounded-lg bg-default"
-    >
+    <div v-if="roundsPlayed >= totalRounds" class="my-6 p-4 rounded-lg bg-default text-default">
       <strong>Game over!</strong>
       <div>Your final score: {{ score }} / {{ totalRounds }}</div>
       <div class="mt-2">
@@ -89,20 +92,12 @@ const newRound = () => { roundKey.value += 1; answeredThisRound.value = false }
     </div>
 
     <ClientOnly>
-      <AnimeGuessRound
-        :key="roundKey"
-        :mode="mode"
-        @result="handleResult"
-      />
+      <AnimeGuessRound :key="roundKey" :mode="mode" @result="handleResult" />
     </ClientOnly>
 
-  <div class="mt-6 actions">
+    <div class="mt-6 actions">
       <button class="btn-outline" @click="resetGame">Reset Game</button>
-      <button
-        class="btn"
-        :disabled="!answeredThisRound || roundsPlayed >= totalRounds"
-        @click="nextRound"
-      >
+      <button class="btn" :disabled="!answeredThisRound || roundsPlayed >= totalRounds" @click="nextRound">
         Next Round
       </button>
     </div>
@@ -110,8 +105,19 @@ const newRound = () => { roundKey.value += 1; answeredThisRound.value = false }
 </template>
 
 <style scoped>
-.page-wrapper { max-width: 960px; margin: 0 auto; padding: 0 var(--page-x); }
-.actions { display:flex; gap:0.75rem; justify-content: space-between; flex-wrap: wrap; }
+.page-wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 var(--page-x);
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
 .btn {
   background-color: var(--brand-pink-500);
   color: white;
@@ -120,7 +126,12 @@ const newRound = () => { roundKey.value += 1; answeredThisRound.value = false }
   border-radius: 6px;
   cursor: pointer;
 }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn-outline {
   background: transparent;
   color: var(--brand-pink-500);
@@ -129,7 +140,10 @@ const newRound = () => { roundKey.value += 1; answeredThisRound.value = false }
   border-radius: 6px;
   cursor: pointer;
 }
+
 @media (max-width: 480px) {
-  h1 { font-size: 1.5rem; }
+  h1 {
+    font-size: 1.5rem;
+  }
 }
 </style>
